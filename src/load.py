@@ -1,40 +1,38 @@
 from src.db import get_connection
 
-def load_funcionarios(df):
+def load_lol(df):
     connection = None
     cursor = None
 
     try:
-        # Abre conexão com o banco usando função centralizada
+        # Abre conexão com Oracle usando a função centralizada em db.py
         connection = get_connection()
         cursor = connection.cursor()
 
-        # SQL com bind variables
-        # Evita SQL injection e melhora performance no Oracle
+        # SQL com bind variables para inserir builds de LoL
         sql = """
-            INSERT INTO funcionarios (id, nome, idade, cidade, salario, setor)
-            VALUES (:1, :2, :3, :4, :5, :6)
+            INSERT INTO lol_builds (champion, role, item, winrate)
+            VALUES (:1, :2, :3, :4)
         """
 
-        # Converte o DataFrame em lista de tuplas
-        # Formato exigido pelo executemany
+        # Converte o DataFrame em lista de tuplas, formato aceito pelo executemany
         dados = [tuple(linha) for linha in df.values]
 
-        # Insere vários registros de uma vez (mais eficiente que loop)
+        # Insere várias linhas de uma vez no banco
         cursor.executemany(sql, dados)
 
-        # Confirma a transação no banco
+        # Confirma a transação no Oracle
         connection.commit()
 
-        print("\nDados inseridos com sucesso no Oracle!")
+        print("\nDados LoL inseridos com sucesso!")
 
     except Exception as e:
-        # Captura qualquer erro durante a inserção
-        print("\nErro ao inserir dados no Oracle:")
+        # Exibe o erro caso a inserção falhe
+        print("\nErro ao inserir dados LoL:")
         print(e)
 
     finally:
-        # Garante que recursos sejam liberados mesmo com erro
+        # Fecha os recursos mesmo se ocorrer erro
         if cursor:
             cursor.close()
 

@@ -1,15 +1,13 @@
-def transform_funcionarios(df):
-    # Remove linhas com valores nulos
-    # Evita erro no banco e garante consistência dos dados
+def transform_lol(df):
+    # Remove linhas com valores nulos para evitar dados incompletos no banco
     df = df.dropna()
 
-    # Reorganiza o índice após remoção de linhas
-    # Mantém o DataFrame limpo e sequencial
+    # Reorganiza o índice após possíveis remoções
     df = df.reset_index(drop=True)
 
-    # Log dos dados após tratamento
-    print("\nDADOS TRATADOS:")
+    # Exibe os dados após o tratamento
+    print("\nDADOS TRATADOS (LoL):")
     print(df)
 
-    # Retorna os dados tratados
+    # Retorna o DataFrame tratado para a etapa de carga
     return df
