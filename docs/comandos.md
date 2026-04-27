@@ -129,3 +129,61 @@ Carrega variáveis do arquivo .env.
 os.getenv("VAR")
 ```
 Obtém valor de variável de ambiente.
+
+---
+
+## Dependências
+
+```bash
+pip list
+```
+Lista os pacotes instalados no ambiente virtual.
+
+```bash
+pip freeze
+```
+Lista os pacotes instalados com versões exatas.
+
+```bash
+pip freeze > requirements.txt
+```
+Atualiza o arquivo de dependências do projeto.
+
+```bash
+pip install -r requirements.txt
+```
+Instala as dependências listadas no requirements.txt.
+
+---
+
+## API (FastAPI)
+
+```bash
+uvicorn main:app --reload
+```
+Inicia a API localmente com recarregamento automático.
+
+```text
+http://127.0.0.1:8000
+```
+URL base da API.
+
+```text
+http://127.0.0.1:8000/docs
+```
+Interface interativa Swagger para testar endpoints.
+
+```text
+GET /
+```
+Retorna uma mensagem simples para validar se a API está funcionando.
+
+```text
+GET /builds
+```
+Retorna os dados de builds de LoL vindos do Oracle.
+
+```bash
+Ctrl + C
+```
+Para a execução da API no terminal.

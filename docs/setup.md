@@ -42,6 +42,16 @@ python -m scripts.run_pipeline
 
 ---
 
+## Instalar dependências
+
+```bash
+pip install -r requirements.txt
+```
+Instala todas as dependências necessárias do projeto.
+
+---
+
+
 ## Observações
 
 - Certifique-se que o Docker está rodando
