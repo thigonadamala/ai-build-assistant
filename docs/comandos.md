@@ -1,189 +1,307 @@
 # Comandos do Projeto
 
-## Navegação e ambiente
+# Navegação e Ambiente
 
 ```bash
 cd data_pipeline
 ```
-Acessa a pasta do projeto.
+
+Acessa a pasta raiz do projeto.
+
+---
 
 ```bash
 venv\Scripts\activate
 ```
-Ativa o ambiente virtual do Python (usa as bibliotecas do projeto).
+
+Ativa o ambiente virtual Python.
 
 ---
 
-## Docker (Oracle)
+# Docker (Oracle)
 
 ```bash
 docker start oracle-free
 ```
-Inicia o container do Oracle.
+
+Inicia o container Oracle.
+
+---
+
+```bash
+docker stop oracle-free
+```
+
+Para o container Oracle.
+
+---
 
 ```bash
 docker ps
 ```
+
 Lista containers em execução.
+
+---
 
 ```bash
 docker exec -it oracle-free bash
 ```
+
 Entra no container Oracle.
+
+---
 
 ```bash
 exit
 ```
+
 Sai do container.
 
 ---
 
-## Oracle (SQLPlus)
+# Oracle (SQLPlus)
 
 ```bash
 sqlplus system/Oracle123@localhost:1521/FREEPDB1
 ```
-Abre conexão com o banco Oracle.
+
+Abre conexão com Oracle via SQLPlus.
+
+---
 
 ```bash
 exit
 ```
+
 Sai do SQLPlus.
 
 ---
 
-## Comandos SQL úteis
+# SQL Útil
 
 ```sql
 SELECT * FROM lol_builds;
 ```
-Consulta todos os dados da tabela.
+
+Consulta todos os dados.
+
+---
 
 ```sql
 DELETE FROM lol_builds;
 ```
-Remove todos os registros da tabela.
+
+Remove registros da tabela.
+
+---
 
 ```sql
 COMMIT;
 ```
-Confirma alterações no banco.
+
+Confirma alterações no Oracle.
 
 ---
 
-## Pipeline
+# Pipeline ETL
 
 ```bash
 python -m scripts.run_pipeline
 ```
-Executa o pipeline ETL completo (extract, transform, load).
+
+Executa o pipeline ETL completo.
+
+Fluxo:
+
+```text
+extract
+↓
+transform
+↓
+load
+```
 
 ---
 
-## Git
+# Scripts Auxiliares
 
 ```bash
-git status
+python -m scripts.create_table
 ```
-Mostra alterações no projeto.
 
-```bash
-git add .
-```
-Adiciona mudanças para commit.
-
-```bash
-git commit -m "mensagem"
-```
-Salva alterações no histórico.
-
-```bash
-git push
-```
-Envia alterações para o GitHub.
+Cria tabelas Oracle.
 
 ---
 
-## Python
-
 ```bash
-pip freeze
+python -m scripts.select_data
 ```
-Lista pacotes instalados.
 
-```bash
-pip freeze > requirements.txt
-```
-Salva dependências do projeto.
+Executa consultas manuais no banco.
 
 ---
 
-## Variáveis de ambiente
-
-```python
-load_dotenv()
+```bash
+python -m scripts.test_connection
 ```
-Carrega variáveis do arquivo .env.
 
-```python
-os.getenv("VAR")
-```
-Obtém valor de variável de ambiente.
+Testa conexão com Oracle.
 
 ---
 
-## Dependências
-
-```bash
-pip list
-```
-Lista os pacotes instalados no ambiente virtual.
-
-```bash
-pip freeze
-```
-Lista os pacotes instalados com versões exatas.
-
-```bash
-pip freeze > requirements.txt
-```
-Atualiza o arquivo de dependências do projeto.
-
-```bash
-pip install -r requirements.txt
-```
-Instala as dependências listadas no requirements.txt.
-
----
-
-## API (FastAPI)
+# API (FastAPI)
 
 ```bash
 uvicorn main:app --reload
 ```
-Inicia a API localmente com recarregamento automático.
+
+Inicia a API localmente.
+
+---
 
 ```text
 http://127.0.0.1:8000
 ```
+
 URL base da API.
+
+---
 
 ```text
 http://127.0.0.1:8000/docs
 ```
-Interface interativa Swagger para testar endpoints.
+
+Swagger da API.
+
+---
+
+# Endpoints
 
 ```text
 GET /
 ```
-Retorna uma mensagem simples para validar se a API está funcionando.
+
+Retorna status da API.
+
+---
 
 ```text
 GET /builds
 ```
-Retorna os dados de builds de LoL vindos do Oracle.
+
+Retorna builds do Oracle.
+
+Exemplo:
+
+```text
+/builds?limit=2
+```
+
+---
+
+```text
+GET /ask
+```
+
+Recebe perguntas em linguagem natural.
+
+Exemplo:
+
+```text
+/ask?question=qual a build da ahri
+```
+
+---
 
 ```bash
 Ctrl + C
 ```
-Para a execução da API no terminal.
+
+Para execução da API.
+
+---
+
+# Git
+
+```bash
+git status
+```
+
+Mostra alterações do projeto.
+
+---
+
+```bash
+git add .
+```
+
+Adiciona arquivos ao stage.
+
+---
+
+```bash
+git commit -m "mensagem"
+```
+
+Cria commit.
+
+---
+
+```bash
+git push
+```
+
+Envia alterações para GitHub.
+
+---
+
+# Dependências Python
+
+```bash
+pip list
+```
+
+Lista pacotes instalados.
+
+---
+
+```bash
+pip freeze
+```
+
+Lista dependências com versões exatas.
+
+---
+
+```bash
+pip freeze > requirements.txt
+```
+
+Atualiza requirements.txt.
+
+---
+
+```bash
+pip install -r requirements.txt
+```
+
+Instala dependências do projeto.
+
+---
+
+# Variáveis de Ambiente
+
+```python
+load_dotenv()
+```
+
+Carrega variáveis do arquivo `.env`.
+
+---
+
+```python
+os.getenv("VAR")
+```
+
+Obtém valor de variável de ambiente.
