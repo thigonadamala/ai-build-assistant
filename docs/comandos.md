@@ -1,5 +1,15 @@
 # Comandos do Projeto
 
+---
+
+```bash
+Ctrl + Shift + V
+```
+
+Abre a visualização formatada do arquivo `.md` no VS Code.
+
+---
+
 # Navegação e Ambiente
 
 ```bash
