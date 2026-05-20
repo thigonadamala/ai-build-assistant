@@ -6,3 +6,4 @@ response = ask_llm(
 )
 
 print(response)
+print(type(response))

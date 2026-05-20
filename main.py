@@ -1,7 +1,6 @@
 from fastapi import FastAPI
-
-from src.build_service import get_available_champions, get_builds
-from src.interpretation import interpret_question
+from src.build_service import get_builds
+from src.llm_service import ask_llm
 from src.response_generator import generate_answer
 
 app = FastAPI()
@@ -27,18 +26,23 @@ def builds(
 
 @app.get("/ask")
 def ask(question: str):
-    available_champions = get_available_champions()
 
-    filters = interpret_question(
-        question=question,
-        available_champions=available_champions
-    )
+    filters = ask_llm(question)
+
+    print("FILTROS LLM:")
+    print(filters)
+
+    if "limit" not in filters:
+        filters["limit"] = 1
 
     result = get_builds(
         champion=filters["champion"],
         role=filters["role"],
         limit=filters["limit"]
     )
+
+    print("RESULTADO DO BANCO:")
+    print(result)
 
     data = result["data"]
 

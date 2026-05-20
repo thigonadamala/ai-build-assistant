@@ -1,10 +1,13 @@
+import json
 import os
 
+from dotenv import load_dotenv
 from openai import OpenAI
 
 
-api_key = os.getenv("OPENAI_API_KEY")
+load_dotenv()
 
+api_key = os.getenv("OPENAI_API_KEY")
 
 client = OpenAI(
     api_key=api_key
@@ -12,7 +15,6 @@ client = OpenAI(
 
 
 def ask_llm(question: str):
-
     response = client.responses.create(
         model="gpt-4.1-mini",
         input=f"""
@@ -27,8 +29,10 @@ def ask_llm(question: str):
         Pergunta:
         {question}
 
-        Responda apenas em JSON.
+        Responda apenas em JSON válido, sem markdown.
         """
     )
 
-    return response.output_text
+    output_text = response.output_text
+
+    return json.loads(output_text)
