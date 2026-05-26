@@ -32,36 +32,69 @@ def ask(question: str):
     print("FILTROS LLM:")
     print(filters)
 
-    if "limit" not in filters:
-        filters["limit"] = 1
+    intent = filters.get("intent", "general")
+    champion = filters.get("champion")
+    role = filters.get("role")
+    limit = filters.get("limit", 1)
 
-    result = get_builds(
-        champion=filters["champion"],
-        role=filters["role"],
-        limit=filters["limit"]
-    )
+    if intent == "build":
 
-    print("RESULTADO DO BANCO:")
-    print(result)
+        result = get_builds(
+            champion=champion,
+            role=role,
+            limit=limit
+        )
 
-    data = result["data"]
+        data = result["data"]
 
-    if not data:
+        if not data:
+            return {
+                "question": question,
+                "interpreted_filters": filters,
+                "answer": "Não encontrei builds para essa pergunta.",
+                "data": []
+            }
+
+        answer = generate_answer(
+            intent=intent,
+            best_build=data[0]
+        )
+
         return {
             "question": question,
             "interpreted_filters": filters,
-            "answer": "Não encontrei dados para essa pergunta.",
-            "data": []
+            "answer": answer,
+            "data": data
         }
 
-    answer = generate_answer(
-        intent=filters["intent"],
-        best_build=data[0]
-    )
+    elif intent == "runes":
 
-    return {
-        "question": question,
-        "interpreted_filters": filters,
-        "answer": answer,
-        "data": data
-    }
+        return {
+            "question": question,
+            "interpreted_filters": filters,
+            "answer": "Sistema de runas ainda não implementado."
+        }
+
+    elif intent == "counters":
+
+        return {
+            "question": question,
+            "interpreted_filters": filters,
+            "answer": "Sistema de counters ainda não implementado."
+        }
+
+    elif intent == "matchup":
+
+        return {
+            "question": question,
+            "interpreted_filters": filters,
+            "answer": "Sistema de matchups ainda não implementado."
+        }
+
+    else:
+
+        return {
+            "question": question,
+            "interpreted_filters": filters,
+            "answer": "Ainda não sei responder esse tipo de pergunta."
+        }

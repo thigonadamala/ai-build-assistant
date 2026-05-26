@@ -27,25 +27,64 @@ def ask_llm(question: str):
         - role
         - limit
 
+        Intents permitidas:
+        - build
+        - winrate
+        - runes
+        - skills
+        - counters
+        - synergies
+        - matchup
+        - power_spike
+        - general
+
         Regras:
-        - intent deve ser: build, winrate ou general
+        - intent deve ser uma das intents permitidas
         - champion deve ser o nome do campeão, ou null se não existir
         - role deve ser mid, adc, support, top, jungle ou null
         - limit deve ser sempre 1
         - responda somente JSON válido
         - não use markdown
         - não use bloco de código
+        - não explique nada fora do JSON
+
+        Exemplos:
 
         Pergunta:
-        {question}
+        qual a build da ahri mid
 
-        Exemplo de resposta:
+        Resposta:
         {{
             "intent": "build",
             "champion": "Ahri",
             "role": "mid",
             "limit": 1
         }}
+
+        Pergunta:
+        qual a runa da jinx adc
+
+        Resposta:
+        {{
+            "intent": "runes",
+            "champion": "Jinx",
+            "role": "adc",
+            "limit": 1
+        }}
+
+        Pergunta:
+        quem countera caitlyn
+
+        Resposta:
+        {{
+            "intent": "counters",
+            "champion": "Caitlyn",
+            "role": null,
+            "limit": 1
+        }}
+
+        Pergunta do usuário:
+        {question}
         """
     )
 
