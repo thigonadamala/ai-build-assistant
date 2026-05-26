@@ -42,6 +42,7 @@ API retorna JSON final
 data_pipeline/
 
 ├── data/
+│   ├── funcionarios.csv
 │   └── lol_builds.csv
 
 ├── docs/
@@ -52,14 +53,20 @@ data_pipeline/
 ├── src/
 │   ├── db.py
 │   ├── build_service.py
+│   ├── extract.py
 │   ├── interpretation.py
-│   └── response_generator.py
+│   ├── load.py
+│   ├── response_generator.py
+│   └── transform.py
 
 ├── pipelines/
 │   └── etl_pipeline.py
 
 ├── scripts/
-│   └── run_pipeline.py
+│   ├── create_table.py
+│   ├── run_pipeline.py
+│   ├── select_data.py
+│   └── test_connection.py
 
 ├── main.py
 ├── requirements.txt
@@ -152,6 +159,58 @@ oracledb
 dotenv
 variáveis de ambiente
 ```
+
+---
+
+# Scripts ETL
+
+## extract.py
+
+Responsável pela leitura dos arquivos CSV.
+
+---
+
+## transform.py
+
+Responsável pelo tratamento e validação dos dados antes da carga.
+
+---
+
+## load.py
+
+Responsável pela inserção dos dados no Oracle.
+
+---
+
+## etl_pipeline.py
+
+Responsável pela orquestração do fluxo ETL:
+
+```text
+extract
+↓
+transform
+↓
+load
+```
+
+---
+
+## create_table.py
+
+Script utilizado para criação das tabelas Oracle.
+
+---
+
+## select_data.py
+
+Script utilizado para consultas manuais no banco de dados.
+
+---
+
+## test_connection.py
+
+Script utilizado para validar a conexão com Oracle.
 
 ---
 
