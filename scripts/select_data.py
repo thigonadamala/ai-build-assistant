@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 def select_data():
     connection = None
     cursor = None
@@ -17,10 +18,16 @@ def select_data():
 
         cursor = connection.cursor()
 
-        cursor.execute("SELECT * FROM funcionarios ORDER BY id")
+        cursor.execute("""
+            SELECT *
+            FROM lol_counters
+            ORDER BY champion
+        """)
+
         dados = cursor.fetchall()
 
-        print("DADOS NA TABELA FUNCIONARIOS:")
+        print("DADOS NA TABELA LOL_COUNTERS:")
+
         for linha in dados:
             print(linha)
 
@@ -31,8 +38,10 @@ def select_data():
     finally:
         if cursor:
             cursor.close()
+
         if connection:
             connection.close()
+
 
 if __name__ == "__main__":
     select_data()

@@ -20,7 +20,7 @@ def ask_llm(question: str):
         input=f"""
         Você é um assistente de League of Legends.
 
-        Interprete a pergunta do usuário e extraia as informações abaixo:
+        Interprete a pergunta do usuário e extraia:
 
         - intent
         - champion
@@ -42,7 +42,8 @@ def ask_llm(question: str):
         - intent deve ser uma das intents permitidas
         - champion deve ser o nome do campeão, ou null se não existir
         - role deve ser mid, adc, support, top, jungle ou null
-        - limit deve ser sempre 1
+        - limit deve ser null quando o usuário não pedir quantidade
+        - limit deve ser um número somente quando o usuário pedir uma quantidade explicitamente
         - responda somente JSON válido
         - não use markdown
         - não use bloco de código
@@ -51,25 +52,14 @@ def ask_llm(question: str):
         Exemplos:
 
         Pergunta:
-        qual a build da ahri mid
+        qual a build da ahri
 
         Resposta:
         {{
             "intent": "build",
             "champion": "Ahri",
-            "role": "mid",
-            "limit": 1
-        }}
-
-        Pergunta:
-        qual a runa da jinx adc
-
-        Resposta:
-        {{
-            "intent": "runes",
-            "champion": "Jinx",
-            "role": "adc",
-            "limit": 1
+            "role": null,
+            "limit": null
         }}
 
         Pergunta:
@@ -80,7 +70,18 @@ def ask_llm(question: str):
             "intent": "counters",
             "champion": "Caitlyn",
             "role": null,
-            "limit": 1
+            "limit": null
+        }}
+
+        Pergunta:
+        me mostra 5 counters da caitlyn
+
+        Resposta:
+        {{
+            "intent": "counters",
+            "champion": "Caitlyn",
+            "role": null,
+            "limit": 5
         }}
 
         Pergunta do usuário:
@@ -98,7 +99,7 @@ def ask_llm(question: str):
             "intent": "general",
             "champion": None,
             "role": None,
-            "limit": 1,
+            "limit": None,
             "error": "Resposta inválida do LLM",
             "raw_response": output_text
         }

@@ -18,26 +18,28 @@ def create_table():
         cursor = connection.cursor()
 
         cursor.execute("""
-            CREATE TABLE funcionarios (
-                id NUMBER CONSTRAINT pk_funcionarios PRIMARY KEY,
-                nome VARCHAR2(100) NOT NULL,
-                idade NUMBER NOT NULL,
-                cidade VARCHAR2(100) NOT NULL,
-                salario NUMBER NOT NULL,
-                setor VARCHAR2(100) NOT NULL
+            CREATE TABLE lol_counters (
+                id NUMBER GENERATED ALWAYS AS IDENTITY
+                CONSTRAINT pk_lol_counters PRIMARY KEY,
+
+                champion VARCHAR2(50) NOT NULL,
+                counter_champion VARCHAR2(50) NOT NULL,
+                role VARCHAR2(20) NOT NULL,
+                winrate NUMBER(5,2) NOT NULL
             )
         """)
 
         connection.commit()
-        print("Tabela criada com sucesso!")
+        print("Tabela lol_counters criada com sucesso!")
 
     except Exception as e:
-        print("Erro ao criar a tabela:")
+        print("Erro ao criar a tabela lol_counters:")
         print(e)
 
     finally:
         if cursor:
             cursor.close()
+
         if connection:
             connection.close()
 

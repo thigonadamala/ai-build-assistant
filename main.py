@@ -1,9 +1,61 @@
 from fastapi import FastAPI
+
 from src.build_service import get_builds
+from src.counter_service import get_counters
 from src.llm_service import ask_llm
 from src.response_generator import generate_answer
 
 app = FastAPI()
+
+
+DEFAULT_LIMITS = {
+    "build": 1,
+    "winrate": 1,
+    "counters": 3,
+    "runes": 3,
+    "matchup": 3,
+    "skills": 3,
+    "synergies": 3,
+    "power_spike": 1,
+    "general": 1
+}
+
+
+MAX_LIMITS = {
+    "build": 5,
+    "winrate": 5,
+    "counters": 10,
+    "runes": 10,
+    "matchup": 10,
+    "skills": 10,
+    "synergies": 10,
+    "power_spike": 5,
+    "general": 10
+}
+
+
+def resolve_limit(intent: str, filters: dict) -> int:
+    requested_limit = filters.get("limit")
+
+    default_limit = DEFAULT_LIMITS.get(intent, 1)
+    max_limit = MAX_LIMITS.get(intent, 10)
+
+    if requested_limit is None:
+        return default_limit
+
+    try:
+        requested_limit = int(requested_limit)
+
+    except (ValueError, TypeError):
+        return default_limit
+
+    if requested_limit <= 0:
+        return default_limit
+
+    if requested_limit > max_limit:
+        return max_limit
+
+    return requested_limit
 
 
 @app.get("/")
@@ -26,7 +78,6 @@ def builds(
 
 @app.get("/ask")
 def ask(question: str):
-
     filters = ask_llm(question)
 
     print("FILTROS LLM:")
@@ -35,10 +86,11 @@ def ask(question: str):
     intent = filters.get("intent", "general")
     champion = filters.get("champion")
     role = filters.get("role")
-    limit = filters.get("limit", 1)
+    limit = resolve_limit(intent, filters)
+
+    filters["limit"] = limit
 
     if intent == "build":
-
         result = get_builds(
             champion=champion,
             role=role,
@@ -57,7 +109,7 @@ def ask(question: str):
 
         answer = generate_answer(
             intent=intent,
-            best_build=data[0]
+            data=data[0]
         )
 
         return {
@@ -67,24 +119,49 @@ def ask(question: str):
             "data": data
         }
 
-    elif intent == "runes":
+    elif intent == "counters":
+        result = get_counters(
+            champion=champion,
+            role=role,
+            limit=limit
+        )
 
+        total = result["total"]
+        service_filters = result["filters"]
+        data = result["data"]
+
+        if not data:
+            return {
+                "question": question,
+                "interpreted_filters": filters,
+                "applied_filters": service_filters,
+                "total": total,
+                "answer": "Não encontrei counters para essa pergunta.",
+                "data": []
+            }
+
+        answer = generate_answer(
+            intent=intent,
+            data=data
+        )
+
+        return {
+            "question": question,
+            "interpreted_filters": filters,
+            "applied_filters": service_filters,
+            "total": total,
+            "answer": answer,
+            "data": data
+        }
+
+    elif intent == "runes":
         return {
             "question": question,
             "interpreted_filters": filters,
             "answer": "Sistema de runas ainda não implementado."
         }
 
-    elif intent == "counters":
-
-        return {
-            "question": question,
-            "interpreted_filters": filters,
-            "answer": "Sistema de counters ainda não implementado."
-        }
-
     elif intent == "matchup":
-
         return {
             "question": question,
             "interpreted_filters": filters,
@@ -92,7 +169,6 @@ def ask(question: str):
         }
 
     else:
-
         return {
             "question": question,
             "interpreted_filters": filters,

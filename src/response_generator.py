@@ -1,31 +1,32 @@
-def generate_answer(intent: str, best_build: dict):
-    # Gera resposta focada em winrate
+def generate_answer(intent: str, data):
+    # Resposta para winrate
     if intent == "winrate":
         return (
             f"O winrate encontrado para "
-            f"{best_build['champion']} "
-            f"na rota {best_build['role']} "
-            f"é de {best_build['winrate']}%."
+            f"{data['champion']} "
+            f"na rota {data['role']} "
+            f"é de {data['winrate']}%."
         )
 
-    # Gera resposta focada em build
+    # Resposta para build
     if intent == "build":
         return (
             f"A melhor build encontrada para "
-            f"{best_build['champion']} "
-            f"na rota {best_build['role']} "
-            f"usa {best_build['item']}, "
+            f"{data['champion']} "
+            f"na rota {data['role']} "
+            f"usa {data['item']}, "
             f"com winrate de "
-            f"{best_build['winrate']}%."
+            f"{data['winrate']}%."
         )
 
-    # Resposta geral quando a intenção não é específica
-    return (
-        f"Encontrei dados para "
-        f"{best_build['champion']} "
-        f"na rota {best_build['role']}. "
-        f"O item recomendado é "
-        f"{best_build['item']} "
-        f"e o winrate é "
-        f"{best_build['winrate']}%."
-    )
+    # Resposta para counters
+    if intent == "counters":
+        champion = data[0]["champion"]
+
+        return (
+            f"Encontrei {len(data)} counter(s) "
+            f"para {champion}."
+        )
+
+    # Resposta geral
+    return "Encontrei dados para sua pergunta."     
