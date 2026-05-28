@@ -39,6 +39,14 @@ Inicia o container Oracle.
 ---
 
 ```bash
+uvicorn main:app --reload
+```
+
+Inicia a API localmente.
+
+---
+
+```bash
 docker stop oracle-free
 ```
 
