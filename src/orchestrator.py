@@ -31,9 +31,17 @@ MAX_LIMITS = {
 }
 
 
-INTENT_SERVICES = {
-    "counters": get_counters,
-    "runes": get_runes
+INTENT_CONFIG = {
+    "counters": {
+        "service": get_counters,
+        "empty_message": "Não encontrei counters para essa pergunta.",
+        "response_mode": "list"
+    },
+    "runes": {
+        "service": get_runes,
+        "empty_message": "Não encontrei runas para essa pergunta.",
+        "response_mode": "list"
+    }
 }
 
 
@@ -85,16 +93,56 @@ def build_response(
     return response
 
 
-def handle_list_intent(
+def handle_build_intent(
+    question: str,
+    filters: dict,
+    champion: str | None,
+    role: str | None,
+    limit: int
+):
+    result = get_builds(
+        champion=champion,
+        role=role,
+        limit=limit
+    )
+
+    data = result["data"]
+
+    if not data:
+        return build_response(
+            question=question,
+            interpreted_filters=filters,
+            applied_filters=None,
+            total=None,
+            answer="Não encontrei builds para essa pergunta.",
+            data=[]
+        )
+
+    answer = generate_answer(
+        intent="build",
+        data=data[0]
+    )
+
+    return build_response(
+        question=question,
+        interpreted_filters=filters,
+        applied_filters=None,
+        total=None,
+        answer=answer,
+        data=data
+    )
+
+
+def handle_configured_intent(
     question: str,
     filters: dict,
     intent: str,
     champion: str | None,
     role: str | None,
-    limit: int,
-    empty_message: str
+    limit: int
 ):
-    service = INTENT_SERVICES[intent]
+    config = INTENT_CONFIG[intent]
+    service = config["service"]
 
     result = service(
         champion=champion,
@@ -112,7 +160,7 @@ def handle_list_intent(
             interpreted_filters=filters,
             applied_filters=service_filters,
             total=total,
-            answer=empty_message,
+            answer=config["empty_message"],
             data=[]
         )
 
@@ -145,58 +193,22 @@ def handle_question(question: str):
     filters["limit"] = limit
 
     if intent == "build":
-        result = get_builds(
+        return handle_build_intent(
+            question=question,
+            filters=filters,
             champion=champion,
             role=role,
             limit=limit
         )
 
-        data = result["data"]
-
-        if not data:
-            return build_response(
-                question=question,
-                interpreted_filters=filters,
-                applied_filters=None,
-                total=None,
-                answer="Não encontrei builds para essa pergunta.",
-                data=[]
-            )
-
-        answer = generate_answer(
-            intent=intent,
-            data=data[0]
-        )
-
-        return build_response(
-            question=question,
-            interpreted_filters=filters,
-            applied_filters=None,
-            total=None,
-            answer=answer,
-            data=data
-        )
-
-    if intent == "counters":
-        return handle_list_intent(
+    if intent in INTENT_CONFIG:
+        return handle_configured_intent(
             question=question,
             filters=filters,
             intent=intent,
             champion=champion,
             role=role,
-            limit=limit,
-            empty_message="Não encontrei counters para essa pergunta."
-        )
-
-    if intent == "runes":
-        return handle_list_intent(
-            question=question,
-            filters=filters,
-            intent=intent,
-            champion=champion,
-            role=role,
-            limit=limit,
-            empty_message="Não encontrei runas para essa pergunta."
+            limit=limit
         )
 
     if intent == "matchup":
