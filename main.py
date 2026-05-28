@@ -4,6 +4,7 @@ from src.build_service import get_builds
 from src.counter_service import get_counters
 from src.llm_service import ask_llm
 from src.response_generator import generate_answer
+from src.rune_service import get_runes
 
 app = FastAPI()
 
@@ -155,10 +156,38 @@ def ask(question: str):
         }
 
     elif intent == "runes":
+        result = get_runes(
+            champion=champion,
+            role=role,
+            limit=limit
+        )
+
+        total = result["total"]
+        service_filters = result["filters"]
+        data = result["data"]
+
+        if not data:
+            return {
+                "question": question,
+                "interpreted_filters": filters,
+                "applied_filters": service_filters,
+                "total": total,
+                "answer": "Não encontrei runas para essa pergunta.",
+                "data": []
+            }
+
+        answer = generate_answer(
+            intent=intent,
+            data=data
+        )
+
         return {
             "question": question,
             "interpreted_filters": filters,
-            "answer": "Sistema de runas ainda não implementado."
+            "applied_filters": service_filters,
+            "total": total,
+            "answer": answer,
+            "data": data
         }
 
     elif intent == "matchup":

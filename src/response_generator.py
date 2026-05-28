@@ -21,12 +21,38 @@ def generate_answer(intent: str, data):
 
     # Resposta para counters
     if intent == "counters":
+        if not data:
+            return "Não encontrei counters para essa pergunta."
+
         champion = data[0]["champion"]
+        counter_names = [
+            counter["counter_champion"]
+            for counter in data
+        ]
+
+        counters_text = ", ".join(counter_names)
 
         return (
-            f"Encontrei {len(data)} counter(s) "
-            f"para {champion}."
+            f"Os principais counters de "
+            f"{champion} "
+            f"são {counters_text}."
+        )
+
+    # Resposta para runas
+    if intent == "runes":
+        if not data:
+            return "Não encontrei runas para essa pergunta."
+
+        best_rune = data[0]
+
+        return (
+            f"A melhor página de runas encontrada para "
+            f"{best_rune['champion']} "
+            f"na rota {best_rune['role']} "
+            f"usa {best_rune['primary_rune']} "
+            f"com {best_rune['secondary_rune']}, "
+            f"com winrate de {best_rune['winrate']}%."
         )
 
     # Resposta geral
-    return "Encontrei dados para sua pergunta."     
+    return "Ainda não sei responder esse tipo de pergunta."
