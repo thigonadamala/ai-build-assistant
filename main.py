@@ -59,6 +59,30 @@ def resolve_limit(intent: str, filters: dict) -> int:
     return requested_limit
 
 
+def build_response(
+    question: str,
+    interpreted_filters: dict,
+    applied_filters: dict | None,
+    total: int | None,
+    answer: str,
+    data: list
+):
+    response = {
+        "question": question,
+        "interpreted_filters": interpreted_filters,
+        "answer": answer,
+        "data": data
+    }
+
+    if applied_filters is not None:
+        response["applied_filters"] = applied_filters
+
+    if total is not None:
+        response["total"] = total
+
+    return response
+
+
 @app.get("/")
 def home():
     return {"message": "API LoL funcionando"}
@@ -101,24 +125,28 @@ def ask(question: str):
         data = result["data"]
 
         if not data:
-            return {
-                "question": question,
-                "interpreted_filters": filters,
-                "answer": "Não encontrei builds para essa pergunta.",
-                "data": []
-            }
+            return build_response(
+                question=question,
+                interpreted_filters=filters,
+                applied_filters=None,
+                total=None,
+                answer="Não encontrei builds para essa pergunta.",
+                data=[]
+            )
 
         answer = generate_answer(
             intent=intent,
             data=data[0]
         )
 
-        return {
-            "question": question,
-            "interpreted_filters": filters,
-            "answer": answer,
-            "data": data
-        }
+        return build_response(
+            question=question,
+            interpreted_filters=filters,
+            applied_filters=None,
+            total=None,
+            answer=answer,
+            data=data
+        )
 
     elif intent == "counters":
         result = get_counters(
@@ -132,28 +160,28 @@ def ask(question: str):
         data = result["data"]
 
         if not data:
-            return {
-                "question": question,
-                "interpreted_filters": filters,
-                "applied_filters": service_filters,
-                "total": total,
-                "answer": "Não encontrei counters para essa pergunta.",
-                "data": []
-            }
+            return build_response(
+                question=question,
+                interpreted_filters=filters,
+                applied_filters=service_filters,
+                total=total,
+                answer="Não encontrei counters para essa pergunta.",
+                data=[]
+            )
 
         answer = generate_answer(
             intent=intent,
             data=data
         )
 
-        return {
-            "question": question,
-            "interpreted_filters": filters,
-            "applied_filters": service_filters,
-            "total": total,
-            "answer": answer,
-            "data": data
-        }
+        return build_response(
+            question=question,
+            interpreted_filters=filters,
+            applied_filters=service_filters,
+            total=total,
+            answer=answer,
+            data=data
+        )
 
     elif intent == "runes":
         result = get_runes(
@@ -167,39 +195,45 @@ def ask(question: str):
         data = result["data"]
 
         if not data:
-            return {
-                "question": question,
-                "interpreted_filters": filters,
-                "applied_filters": service_filters,
-                "total": total,
-                "answer": "Não encontrei runas para essa pergunta.",
-                "data": []
-            }
+            return build_response(
+                question=question,
+                interpreted_filters=filters,
+                applied_filters=service_filters,
+                total=total,
+                answer="Não encontrei runas para essa pergunta.",
+                data=[]
+            )
 
         answer = generate_answer(
             intent=intent,
             data=data
         )
 
-        return {
-            "question": question,
-            "interpreted_filters": filters,
-            "applied_filters": service_filters,
-            "total": total,
-            "answer": answer,
-            "data": data
-        }
+        return build_response(
+            question=question,
+            interpreted_filters=filters,
+            applied_filters=service_filters,
+            total=total,
+            answer=answer,
+            data=data
+        )
 
     elif intent == "matchup":
-        return {
-            "question": question,
-            "interpreted_filters": filters,
-            "answer": "Sistema de matchups ainda não implementado."
-        }
+        return build_response(
+            question=question,
+            interpreted_filters=filters,
+            applied_filters=None,
+            total=None,
+            answer="Sistema de matchups ainda não implementado.",
+            data=[]
+        )
 
     else:
-        return {
-            "question": question,
-            "interpreted_filters": filters,
-            "answer": "Ainda não sei responder esse tipo de pergunta."
-        }
+        return build_response(
+            question=question,
+            interpreted_filters=filters,
+            applied_filters=None,
+            total=None,
+            answer="Ainda não sei responder esse tipo de pergunta.",
+            data=[]
+        )
