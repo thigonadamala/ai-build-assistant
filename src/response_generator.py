@@ -53,14 +53,39 @@ def generate_runes_answer(data):
     )
 
 
+def extract_first_context_paragraph(context: str | None):
+    if not context:
+        return None
+
+    paragraphs = [
+        paragraph.strip()
+        for paragraph in context.split("\n\n")
+        if paragraph.strip()
+    ]
+
+    for paragraph in paragraphs:
+        if not paragraph.startswith("#"):
+            return paragraph.rstrip(".")
+
+    return None
+
+
 def generate_overview_answer(data):
     champion = data["champion"]
 
     build = data["build"][0] if data["build"] else None
     rune = data["runes"][0] if data["runes"] else None
     counters = data["counters"]
+    knowledge_context = data.get("knowledge_context")
+
+    context_summary = extract_first_context_paragraph(
+        knowledge_context
+    )
 
     answer_parts = []
+
+    if context_summary:
+        answer_parts.append(context_summary)
 
     if build:
         answer_parts.append(
@@ -94,7 +119,7 @@ def generate_overview_answer(data):
     overview_text = ". ".join(answer_parts)
 
     return f"Visão geral de {champion}: {overview_text}."
-    
+
 
 ANSWER_GENERATORS = {
     "winrate": generate_winrate_answer,

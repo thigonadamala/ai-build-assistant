@@ -1,6 +1,7 @@
 from src.build_service import get_builds
 from src.counter_service import get_counters
 from src.llm_service import ask_llm
+from src.rag_service import get_champion_context
 from src.response_generator import generate_answer
 from src.rune_service import get_runes
 
@@ -215,12 +216,17 @@ def handle_overview_intent(
         limit=1
     )
 
+    champion_context = get_champion_context(
+        champion=champion
+    )
+
     overview_data = {
         "champion": champion,
         "role": role,
         "build": build_result["data"],
         "counters": counters_result["data"],
-        "runes": runes_result["data"]
+        "runes": runes_result["data"],
+        "knowledge_context": champion_context
     }
 
     answer = generate_answer(
