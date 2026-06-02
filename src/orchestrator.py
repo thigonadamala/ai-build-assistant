@@ -14,6 +14,7 @@ DEFAULT_LIMITS = {
     "skills": 3,
     "synergies": 3,
     "power_spike": 1,
+    "overview": 1,
     "general": 1
 }
 
@@ -27,6 +28,7 @@ MAX_LIMITS = {
     "skills": 10,
     "synergies": 10,
     "power_spike": 5,
+    "overview": 1,
     "general": 10
 }
 
@@ -75,7 +77,7 @@ def build_response(
     applied_filters: dict | None,
     total: int | None,
     answer: str,
-    data: list
+    data
 ):
     response = {
         "question": question,
@@ -179,6 +181,66 @@ def handle_configured_intent(
     )
 
 
+def handle_overview_intent(
+    question: str,
+    filters: dict,
+    champion: str | None,
+    role: str | None
+):
+    if not champion:
+        return build_response(
+            question=question,
+            interpreted_filters=filters,
+            applied_filters=None,
+            total=None,
+            answer="Informe um campeão para gerar uma visão geral.",
+            data={}
+        )
+
+    build_result = get_builds(
+        champion=champion,
+        role=role,
+        limit=1
+    )
+
+    counters_result = get_counters(
+        champion=champion,
+        role=role,
+        limit=3
+    )
+
+    runes_result = get_runes(
+        champion=champion,
+        role=role,
+        limit=1
+    )
+
+    overview_data = {
+        "champion": champion,
+        "role": role,
+        "build": build_result["data"],
+        "counters": counters_result["data"],
+        "runes": runes_result["data"]
+    }
+
+    answer = generate_answer(
+        intent="overview",
+        data=overview_data
+    )
+
+    return build_response(
+        question=question,
+        interpreted_filters=filters,
+        applied_filters={
+            "champion": champion,
+            "role": role
+        },
+        total=None,
+        answer=answer,
+        data=overview_data
+    )
+
+
 def handle_question(question: str):
     filters = ask_llm(question)
 
@@ -209,6 +271,14 @@ def handle_question(question: str):
             champion=champion,
             role=role,
             limit=limit
+        )
+
+    if intent == "overview":
+        return handle_overview_intent(
+            question=question,
+            filters=filters,
+            champion=champion,
+            role=role
         )
 
     if intent == "matchup":
