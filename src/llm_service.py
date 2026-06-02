@@ -55,74 +55,6 @@ def ask_llm(question: str):
         - não use bloco de código
         - não explique nada fora do JSON
 
-        Exemplos:
-
-        Pergunta:
-        qual a build da ahri
-
-        Resposta:
-        {{
-            "intent": "build",
-            "champion": "Ahri",
-            "role": null,
-            "limit": null
-        }}
-
-        Pergunta:
-        quem countera caitlyn
-
-        Resposta:
-        {{
-            "intent": "counters",
-            "champion": "Caitlyn",
-            "role": null,
-            "limit": null
-        }}
-
-        Pergunta:
-        me mostra 5 counters da caitlyn
-
-        Resposta:
-        {{
-            "intent": "counters",
-            "champion": "Caitlyn",
-            "role": null,
-            "limit": 5
-        }}
-
-        Pergunta:
-        qual a runa da ahri
-
-        Resposta:
-        {{
-            "intent": "runes",
-            "champion": "Ahri",
-            "role": null,
-            "limit": null
-        }}
-
-        Pergunta:
-        me fala sobre a ahri
-
-        Resposta:
-        {{
-            "intent": "overview",
-            "champion": "Ahri",
-            "role": null,
-            "limit": null
-        }}
-
-        Pergunta:
-        ahri
-
-        Resposta:
-        {{
-            "intent": "overview",
-            "champion": "Ahri",
-            "role": null,
-            "limit": null
-        }}
-
         Pergunta do usuário:
         {question}
         """
@@ -142,3 +74,12 @@ def ask_llm(question: str):
             "error": "Resposta inválida do LLM",
             "raw_response": output_text
         }
+
+
+def generate_llm_answer(prompt: str):
+    response = client.responses.create(
+        model="gpt-4.1-mini",
+        input=prompt
+    )
+
+    return response.output_text.strip()

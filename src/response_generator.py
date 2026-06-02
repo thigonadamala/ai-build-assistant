@@ -1,3 +1,6 @@
+from src.llm_service import generate_llm_answer
+
+
 def generate_winrate_answer(data):
     return (
         f"O winrate encontrado para "
@@ -54,68 +57,132 @@ def generate_runes_answer(data):
     )
 
 
-def get_champion_overview_from_rag(data):
+def get_section(data, source_name, section_name):
     rag_context = data.get("rag_context", {})
+    source = rag_context.get(source_name, {})
+    sections = source.get("sections", {})
 
-    champion_context = rag_context.get("champion", {})
-    champion_sections = champion_context.get("sections", {})
+    return sections.get(section_name)
 
-    return champion_sections.get("overview")
+
+def has_reliable_overview_context(data):
+    build = data.get("build", [])
+    runes = data.get("runes", [])
+    counters = data.get("counters", [])
+
+    champion_overview = get_section(
+        data=data,
+        source_name="champion",
+        section_name="overview"
+    )
+
+    return bool(
+        build or
+        runes or
+        counters or
+        champion_overview
+    )
 
 
 def generate_overview_answer(data):
     champion = data["champion"]
 
+    if not has_reliable_overview_context(data):
+        return (
+            f"Não encontrei dados suficientes para gerar "
+            f"uma visão geral confiável sobre {champion}."
+        )
+
     build = data["build"][0] if data["build"] else None
     rune = data["runes"][0] if data["runes"] else None
     counters = data["counters"]
 
-    champion_overview = get_champion_overview_from_rag(
-        data
+    champion_overview = get_section(
+        data=data,
+        source_name="champion",
+        section_name="overview"
     )
 
-    answer_parts = []
+    champion_playstyle = get_section(
+        data=data,
+        source_name="champion",
+        section_name="estilo de jogo"
+    )
 
-    if champion_overview:
-        answer_parts.append(
-            champion_overview.rstrip(".")
-        )
+    champion_strengths = get_section(
+        data=data,
+        source_name="champion",
+        section_name="pontos fortes"
+    )
 
-    if build:
-        answer_parts.append(
-            f"a build recomendada usa {build['item']} "
-            f"na rota {build['role']} "
-            f"com winrate de {build['winrate']}%"
-        )
+    champion_weaknesses = get_section(
+        data=data,
+        source_name="champion",
+        section_name="pontos fracos"
+    )
 
-    if rune:
-        answer_parts.append(
-            f"a página de runas usa {rune['primary_rune']} "
-            f"com {rune['secondary_rune']} "
-            f"e winrate de {rune['winrate']}%"
-        )
+    guide_overview = get_section(
+        data=data,
+        source_name="guide",
+        section_name="overview"
+    )
 
-    if counters:
-        counter_names = [
-            counter["counter_champion"]
-            for counter in counters
-        ]
+    guide_roaming = get_section(
+        data=data,
+        source_name="guide",
+        section_name="quando fazer roaming"
+    )
 
-        counters_text = ", ".join(counter_names)
+    prompt = f"""
+    Você é um assistente estratégico de League of Legends.
 
-        answer_parts.append(
-            f"os principais counters são {counters_text}"
-        )
+    Gere uma resposta natural, objetiva e útil sobre o campeão abaixo.
 
-    if not answer_parts:
-        return (
-            f"Não encontrei dados suficientes para gerar "
-            f"uma visão geral de {champion}."
-        )
+    Regras:
+    - Responda em português.
+    - Não invente dados.
+    - Use apenas as informações fornecidas.
+    - Seja direto.
+    - Não use markdown.
+    - Não cite JSON.
+    - Não diga que está usando contexto.
+    - Se algum dado estiver ausente, ignore esse dado.
+    - Se não houver dados específicos do campeão, informe que não há dados suficientes.
 
-    overview_text = ". ".join(answer_parts)
+    Campeão:
+    {champion}
 
-    return f"Visão geral de {champion}: {overview_text}."
+    Dados de build:
+    {build}
+
+    Dados de runas:
+    {rune}
+
+    Dados de counters:
+    {counters}
+
+    Contexto geral do campeão:
+    {champion_overview}
+
+    Estilo de jogo:
+    {champion_playstyle}
+
+    Pontos fortes:
+    {champion_strengths}
+
+    Pontos fracos:
+    {champion_weaknesses}
+
+    Contexto geral de roaming:
+    {guide_overview}
+
+    Dicas de roaming:
+    {guide_roaming}
+    """
+
+    return generate_llm_answer(
+        prompt=prompt
+    )
 
 
 ANSWER_GENERATORS = {
