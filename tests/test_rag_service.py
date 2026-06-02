@@ -1,7 +1,9 @@
-from src.rag_service import get_champion_context
+from src.rag.rag_service import (
+    get_rag_context
+)
 
 
-context = get_champion_context(
+context = get_rag_context(
     "Ahri"
 )
 

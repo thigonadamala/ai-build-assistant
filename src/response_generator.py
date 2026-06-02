@@ -23,6 +23,7 @@ def generate_counters_answer(data):
         return "Não encontrei counters para essa pergunta."
 
     champion = data[0]["champion"]
+
     counter_names = [
         counter["counter_champion"]
         for counter in data
@@ -53,21 +54,13 @@ def generate_runes_answer(data):
     )
 
 
-def extract_first_context_paragraph(context: str | None):
-    if not context:
-        return None
+def get_champion_overview_from_rag(data):
+    rag_context = data.get("rag_context", {})
 
-    paragraphs = [
-        paragraph.strip()
-        for paragraph in context.split("\n\n")
-        if paragraph.strip()
-    ]
+    champion_context = rag_context.get("champion", {})
+    champion_sections = champion_context.get("sections", {})
 
-    for paragraph in paragraphs:
-        if not paragraph.startswith("#"):
-            return paragraph.rstrip(".")
-
-    return None
+    return champion_sections.get("overview")
 
 
 def generate_overview_answer(data):
@@ -76,16 +69,17 @@ def generate_overview_answer(data):
     build = data["build"][0] if data["build"] else None
     rune = data["runes"][0] if data["runes"] else None
     counters = data["counters"]
-    knowledge_context = data.get("knowledge_context")
 
-    context_summary = extract_first_context_paragraph(
-        knowledge_context
+    champion_overview = get_champion_overview_from_rag(
+        data
     )
 
     answer_parts = []
 
-    if context_summary:
-        answer_parts.append(context_summary)
+    if champion_overview:
+        answer_parts.append(
+            champion_overview.rstrip(".")
+        )
 
     if build:
         answer_parts.append(
@@ -114,7 +108,10 @@ def generate_overview_answer(data):
         )
 
     if not answer_parts:
-        return f"Não encontrei dados suficientes para gerar uma visão geral de {champion}."
+        return (
+            f"Não encontrei dados suficientes para gerar "
+            f"uma visão geral de {champion}."
+        )
 
     overview_text = ". ".join(answer_parts)
 
