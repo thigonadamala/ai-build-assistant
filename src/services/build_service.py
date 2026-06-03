@@ -1,4 +1,4 @@
-from src.db import get_connection
+from src.database.db import get_connection
 
 
 def get_available_champions():

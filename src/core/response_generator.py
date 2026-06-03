@@ -1,5 +1,4 @@
-from src.llm_service import generate_llm_answer
-
+from src.ai.llm_service import generate_llm_answer
 
 def generate_winrate_answer(data):
     return (

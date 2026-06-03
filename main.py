@@ -1,7 +1,7 @@
 from fastapi import FastAPI
-
-from src.build_service import get_builds
-from src.orchestrator import handle_question
+from src.services.build_service import get_builds
+from src.observability.stats_service import get_stats
+from src.core.orchestrator import handle_question
 
 app = FastAPI()
 
@@ -27,3 +27,8 @@ def builds(
 @app.get("/ask")
 def ask(question: str):
     return handle_question(question)
+
+
+@app.get("/stats")
+def stats():
+    return get_stats()

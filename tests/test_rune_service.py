@@ -1,5 +1,4 @@
-from src.rune_service import get_runes
-
+from src.services.rune_service import get_runes
 
 result = get_runes(
     champion="Ahri",

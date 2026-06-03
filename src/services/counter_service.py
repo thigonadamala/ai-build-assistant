@@ -1,5 +1,4 @@
-from src.db import get_connection
-
+from src.database.db import get_connection
 
 def get_counters(champion=None, role=None, limit=3):
     connection = None

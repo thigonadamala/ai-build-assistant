@@ -1,9 +1,10 @@
-from src.build_service import get_builds
-from src.counter_service import get_counters
-from src.llm_service import ask_llm
+from src.ai.llm_service import ask_llm
+from src.observability.logger import write_log
 from src.rag.rag_service import get_rag_context
-from src.response_generator import generate_answer
-from src.rune_service import get_runes
+from src.core.response_generator import generate_answer
+from src.services.build_service import get_builds
+from src.services.counter_service import get_counters
+from src.services.rune_service import get_runes
 
 
 DEFAULT_LIMITS = {
@@ -260,48 +261,76 @@ def handle_question(question: str):
 
     filters["limit"] = limit
 
-    if intent == "build":
-        return handle_build_intent(
-            question=question,
-            filters=filters,
-            champion=champion,
-            role=role,
-            limit=limit
+    try:
+        if intent == "build":
+            response = handle_build_intent(
+                question=question,
+                filters=filters,
+                champion=champion,
+                role=role,
+                limit=limit
+            )
+
+        elif intent in INTENT_CONFIG:
+            response = handle_configured_intent(
+                question=question,
+                filters=filters,
+                intent=intent,
+                champion=champion,
+                role=role,
+                limit=limit
+            )
+
+        elif intent == "overview":
+            response = handle_overview_intent(
+                question=question,
+                filters=filters,
+                champion=champion,
+                role=role
+            )
+
+        elif intent == "matchup":
+            response = build_response(
+                question=question,
+                interpreted_filters=filters,
+                applied_filters=None,
+                total=None,
+                answer="Sistema de matchups ainda não implementado.",
+                data=[]
+            )
+
+        else:
+            response = build_response(
+                question=question,
+                interpreted_filters=filters,
+                applied_filters=None,
+                total=None,
+                answer="Ainda não sei responder esse tipo de pergunta.",
+                data=[]
+            )
+
+        write_log(
+            {
+                "event": "request_success",
+                "question": question,
+                "intent": intent,
+                "champion": champion,
+                "role": role
+            }
         )
 
-    if intent in INTENT_CONFIG:
-        return handle_configured_intent(
-            question=question,
-            filters=filters,
-            intent=intent,
-            champion=champion,
-            role=role,
-            limit=limit
+        return response
+
+    except Exception as e:
+        write_log(
+            {
+                "event": "request_error",
+                "question": question,
+                "intent": intent,
+                "champion": champion,
+                "role": role,
+                "error": str(e)
+            }
         )
 
-    if intent == "overview":
-        return handle_overview_intent(
-            question=question,
-            filters=filters,
-            champion=champion,
-            role=role
-        )
-
-    if intent == "matchup":
-        return build_response(
-            question=question,
-            interpreted_filters=filters,
-            applied_filters=None,
-            total=None,
-            answer="Sistema de matchups ainda não implementado.",
-            data=[]
-        )
-
-    return build_response(
-        question=question,
-        interpreted_filters=filters,
-        applied_filters=None,
-        total=None,
-        answer="Ainda não sei responder esse tipo de pergunta.",
-        data=[]
-    )
+        raise
