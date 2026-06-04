@@ -1,13 +1,14 @@
 # AI Build Assistant (LoL)
 
-Projeto de Engenharia de Dados evoluindo para um sistema de IA capaz de responder perguntas sobre League of Legends utilizando dados estruturados, interpretação de linguagem natural e futuramente LLM + RAG.
+Projeto de Engenharia de Dados, Backend e IA Generativa focado na construção de um assistente capaz de responder perguntas sobre League of Legends utilizando dados estruturados, LLMs e RAG.
 
 ---
 
 # Objetivo
 
-Construir um sistema onde:
+Construir um sistema capaz de:
 
+```text
 Usuário faz uma pergunta
 
 ↓
@@ -20,7 +21,41 @@ Consulta dados estruturados
 
 ↓
 
-Responde em linguagem natural
+Recupera contexto adicional (RAG)
+
+↓
+
+Gera resposta em linguagem natural
+
+↓
+
+Retorna resposta pela API
+```
+
+Exemplo:
+
+```text
+Pergunta:
+"me fala sobre a Ahri"
+
+↓
+
+Intent:
+overview
+
+↓
+
+Campeão:
+Ahri
+
+↓
+
+Consulta banco + conhecimento contextual
+
+↓
+
+Resposta natural gerada pela aplicação
+```
 
 ---
 
@@ -28,60 +63,121 @@ Responde em linguagem natural
 
 ## ETL
 
-- Pipeline ETL funcional
-- Extração de CSV
-- Transformação e validação de dados
-- Carga automatizada no Oracle
+Pipeline funcional para carga de dados.
+
+Fluxo:
+
+```text
+CSV
+↓
+Extract
+↓
+Transform
+↓
+Load
+↓
+Oracle
+```
+
+Capacidades atuais:
+
+* Leitura de CSV com Pandas
+* Tratamento de dados
+* Inserção automatizada no Oracle
+* Estrutura modularizada
 
 ---
 
 ## Banco de Dados
 
-- Oracle Free 23ai
-- Executando via Docker
-- Tabela `lol_builds` criada e populada
+Banco utilizado:
+
+```text
+Oracle Free 23ai
+```
+
+Executado em container Docker.
+
+Atualmente contém:
+
+* Builds
+* Counters
+* Runas
+* Dados utilizados pela API
 
 ---
 
 ## API
 
-- API construída com FastAPI
-- Endpoint `/builds`
-- Endpoint `/ask`
-- Filtros dinâmicos
-- Resposta em JSON
+Construída com:
+
+```text
+FastAPI
+```
+
+Endpoints atuais:
+
+```text
+GET /
+GET /builds
+GET /ask
+GET /stats
+```
 
 ---
 
-## Interpretação
+## LLM
 
-O sistema já possui uma camada inicial de interpretação capaz de detectar:
-
-```text
-intent
-champion
-role
-```
+A aplicação utiliza LLM para interpretar perguntas do usuário.
 
 Exemplo:
 
 ```text
-"qual a build da ahri"
+"qual a build da ahri mid?"
+```
+
 ↓
-intent = build
-champion = Ahri
+
+```json
+{
+  "intent": "build",
+  "champion": "Ahri",
+  "role": "mid",
+  "limit": 1
+}
 ```
+
+Isso elimina grande parte da lógica manual de parsing.
 
 ---
 
-## Resposta Natural
+## RAG
 
-A API já gera respostas em linguagem natural.
+Primeira versão funcional já implementada.
+
+Estrutura atual:
+
+```text
+knowledge/
+
+├── champions/
+└── guides/
+```
+
+O sistema recupera conhecimento contextual para enriquecer respostas utilizando arquivos Markdown especializados.
 
 Exemplo:
 
 ```text
-"A melhor build encontrada para Ahri..."
+Pergunta
+↓
+LLM interpreta
+↓
+Oracle retorna dados estruturados
+↓
+RAG recupera contexto
+↓
+Resposta final
 ```
 
 ---
@@ -90,10 +186,15 @@ Exemplo:
 
 ```text
 Python
-Pandas
-Oracle
-Docker
 FastAPI
+Oracle Database
+Docker
+Docker Compose
+Pandas
+OpenAI API
+python-oracledb
+python-dotenv
+Git
 GitHub
 ```
 
@@ -103,18 +204,34 @@ GitHub
 
 ```text
 Usuário
+
 ↓
+
 FastAPI
+
 ↓
-interpretation.py
+
+Orchestrator
+
 ↓
-build_service.py
+
+LLM
+
 ↓
-Oracle
+
+Serviços da aplicação
+
 ↓
-response_generator.py
+
+Oracle + RAG
+
 ↓
-Resposta final
+
+Resposta natural
+
+↓
+
+JSON
 ```
 
 ---
@@ -127,30 +244,36 @@ data_pipeline/
 ├── data/
 │   ├── funcionarios.csv
 │   └── lol_builds.csv
-
+│
 ├── docs/
-│   ├── arquitetura.md
 │   ├── comandos.md
-│   └── setup.md
-
-├── src/
-│   ├── build_service.py
-│   ├── db.py
-│   ├── extract.py
-│   ├── interpretation.py
-│   ├── load.py
-│   ├── response_generator.py
-│   └── transform.py
-
+│   └── contexto_codex.md
+│
+├── knowledge/
+│   ├── champions/
+│   └── guides/
+│
 ├── pipelines/
-│   └── etl_pipeline.py
-
+│   ├── etl_pipeline.py
+│   └── run_pipeline.py
+│
 ├── scripts/
-│   ├── create_table.py
-│   ├── run_pipeline.py
-│   ├── select_data.py
-│   └── test_connection.py
-
+│   └── database/
+│
+├── src/
+│   ├── ai/
+│   ├── core/
+│   ├── database/
+│   ├── embeddings/
+│   ├── etl/
+│   ├── observability/
+│   ├── rag/
+│   └── services/
+│
+├── tests/
+│
+├── Dockerfile
+├── docker-compose.yml
 ├── main.py
 ├── requirements.txt
 └── .env
@@ -168,7 +291,7 @@ venv\Scripts\activate
 
 ---
 
-## 2. Subir Oracle no Docker
+## 2. Iniciar Oracle
 
 ```bash
 docker start oracle-free
@@ -176,18 +299,26 @@ docker start oracle-free
 
 ---
 
-## 3. Executar pipeline ETL
+## 3. Executar ETL
 
 ```bash
-python -m scripts.run_pipeline
+python -m pipelines.run_pipeline
 ```
 
 ---
 
-## 4. Executar API
+## 4. Executar API localmente
 
 ```bash
 uvicorn main:app --reload
+```
+
+---
+
+## 5. Executar aplicação via Docker
+
+```bash
+docker compose up
 ```
 
 ---
@@ -196,18 +327,26 @@ uvicorn main:app --reload
 
 ## GET /
 
-Status da API.
+Status da aplicação.
+
+Exemplo:
+
+```json
+{
+  "message": "API LoL funcionando"
+}
+```
 
 ---
 
 ## GET /builds
 
-Retorna builds armazenadas no Oracle.
+Consulta builds armazenadas no Oracle.
 
 Exemplo:
 
 ```text
-/builds?limit=2
+/builds?champion=Ahri
 ```
 
 ---
@@ -219,7 +358,37 @@ Recebe perguntas em linguagem natural.
 Exemplo:
 
 ```text
-/ask?question=qual a build da ahri
+/ask?question=me fala sobre a ahri
+```
+
+Fluxo:
+
+```text
+Pergunta
+↓
+LLM
+↓
+Filtros estruturados
+↓
+Banco + RAG
+↓
+Resposta natural
+```
+
+---
+
+## GET /stats
+
+Retorna estatísticas da aplicação.
+
+Exemplo:
+
+```json
+{
+  "total_requests": 0,
+  "success_requests": 0,
+  "error_requests": 0
+}
 ```
 
 ---
@@ -232,39 +401,44 @@ http://127.0.0.1:8000/docs
 
 ---
 
-# Próximos Passos
+# Visão de Longo Prazo
+
+Transformar o AI Build Assistant em um sistema completo de AI Engineering capaz de:
 
 ```text
-LLM
-RAG
-múltiplas fontes de dados
-busca contextual
-agente de IA
-deploy cloud
-```
+Interpretar perguntas complexas
 
----
+Consultar múltiplas fontes de dados
 
-# Objetivo Final
+Utilizar RAG especializado
 
-Evoluir o projeto para um sistema de IA capaz de:
+Implementar busca semântica por embeddings
 
-```text
-interpretar perguntas
-buscar dados em tempo real
-consultar múltiplas fontes
-gerar respostas contextualizadas
+Utilizar agentes para tomada de decisão
+
+Combinar banco de dados, documentos e APIs externas
+
+Gerar respostas contextualizadas e explicáveis
+
+Operar como um assistente especializado de League of Legends
 ```
 
 ---
 
 # Observações
 
-Projeto em evolução contínua com foco em:
+Este projeto tem foco educacional e prático para estudo de:
 
 ```text
 Engenharia de Dados
+
 Backend
-IA Generativa
+
+LLMs
+
+RAG
+
+AI Engineering
+
 Arquitetura de Sistemas
 ```

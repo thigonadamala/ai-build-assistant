@@ -1,6 +1,7 @@
-from src.extract import extract_csv
-from src.transform import transform_lol
-from src.load import load_lol
+from src.etl.extract import extract_csv
+from src.etl.transform import transform_lol
+from src.etl.load import load_lol
+
 
 def run_etl():
     # Etapa 1: lê os dados de builds de LoL do CSV

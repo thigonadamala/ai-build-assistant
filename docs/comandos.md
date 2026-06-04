@@ -1,16 +1,10 @@
 # Comandos do Projeto
 
----
-
-```bash
-Ctrl + Shift + V
-```
-
-Abre a visualização formatada do arquivo `.md` no VS Code.
+Os comandos mais utilizados ficam no topo.
 
 ---
 
-# Navegação e Ambiente
+# Uso Diário
 
 ```bash
 cd data_pipeline
@@ -26,23 +20,113 @@ venv\Scripts\activate
 
 Ativa o ambiente virtual Python.
 
----
+O prompt deve ficar:
 
-# Docker (Oracle)
+```text
+(venv) PS C:\Users\thika\data_pipeline>
+```
+
+---
 
 ```bash
 docker start oracle-free
 ```
 
-Inicia o container Oracle.
+Inicia o Oracle.
 
 ---
 
 ```bash
-uvicorn main:app --reload
+docker compose up
 ```
 
-Inicia a API localmente.
+Sobe a aplicação completa via Docker.
+
+A aplicação passa a rodar dentro de um container Docker.
+
+---
+
+```bash
+Ctrl + C
+```
+
+Para a aplicação iniciada pelo Docker Compose.
+
+---
+
+```bash
+git status
+```
+
+Verifica alterações do projeto.
+
+---
+
+# Primeira Configuração do Projeto
+
+Utilizar apenas na primeira vez que o projeto for configurado.
+
+---
+
+```bash
+git clone https://github.com/thigonadamala/ai-build-assistant.git
+```
+
+Clona o repositório do GitHub para a máquina local.
+
+---
+
+```bash
+cd ai-build-assistant
+```
+
+Acessa a pasta do projeto recém clonado.
+
+---
+
+```bash
+python -m venv venv
+```
+
+Cria um ambiente virtual Python.
+
+O ambiente virtual isola as dependências do projeto e evita conflitos com outros projetos instalados na máquina.
+
+---
+
+```bash
+venv\Scripts\activate
+```
+
+Ativa o ambiente virtual criado.
+
+---
+
+```bash
+pip install -r requirements.txt
+```
+
+Instala todas as dependências listadas no arquivo requirements.txt.
+
+---
+
+# Docker
+
+## Containers
+
+```bash
+docker ps
+```
+
+Lista containers em execução.
+
+---
+
+```bash
+docker start oracle-free
+```
+
+Inicia o Oracle.
 
 ---
 
@@ -50,15 +134,7 @@ Inicia a API localmente.
 docker stop oracle-free
 ```
 
-Para o container Oracle.
-
----
-
-```bash
-docker ps
-```
-
-Lista containers em execução.
+Para o Oracle.
 
 ---
 
@@ -75,6 +151,88 @@ exit
 ```
 
 Sai do container.
+
+---
+
+## Imagens
+
+```bash
+docker images
+```
+
+Lista imagens Docker.
+
+---
+
+```bash
+docker build -t ai-build-assistant .
+```
+
+Lê o Dockerfile e cria uma imagem contendo Python, dependências e o código da aplicação.
+
+---
+
+## Docker Compose
+
+```bash
+docker compose up
+```
+
+Cria e inicia o container da aplicação utilizando as configurações do docker-compose.yml.
+
+---
+
+```bash
+Ctrl + C
+```
+
+Para a aplicação iniciada pelo Docker Compose.
+
+---
+
+## Redes
+
+```bash
+docker network ls
+```
+
+Lista as redes Docker existentes.
+
+---
+
+```bash
+docker network inspect ai-build-network
+```
+
+Mostra os containers conectados à rede do projeto.
+
+---
+
+Rede utilizada:
+
+```text
+ai-build-network
+```
+
+Responsável pela comunicação entre:
+
+```text
+Container API
+↔
+Container Oracle
+```
+
+---
+
+# Desenvolvimento Local
+
+Utilizar apenas quando não estiver usando Docker para a API.
+
+```bash
+uvicorn main:app --reload
+```
+
+Inicia a API localmente no Windows.
 
 ---
 
@@ -102,7 +260,7 @@ Sai do SQLPlus.
 SELECT * FROM lol_builds;
 ```
 
-Consulta todos os dados.
+Consulta todos os registros.
 
 ---
 
@@ -110,7 +268,7 @@ Consulta todos os dados.
 DELETE FROM lol_builds;
 ```
 
-Remove registros da tabela.
+Remove todos os registros.
 
 ---
 
@@ -124,8 +282,18 @@ Confirma alterações no Oracle.
 
 # Pipeline ETL
 
+Antes de executar:
+
 ```bash
-python -m scripts.run_pipeline
+venv\Scripts\activate
+```
+
+Ativa o ambiente virtual.
+
+---
+
+```bash
+python -m pipelines.run_pipeline
 ```
 
 Executa o pipeline ETL completo.
@@ -133,50 +301,22 @@ Executa o pipeline ETL completo.
 Fluxo:
 
 ```text
-extract
+CSV
 ↓
-transform
+extract.py
 ↓
-load
+transform.py
+↓
+load.py
+↓
+Oracle
 ```
+
+Utilizado para carregar ou recarregar dados no banco.
 
 ---
 
-# Scripts Auxiliares
-
-```bash
-python -m scripts.create_table
-```
-
-Cria tabelas Oracle.
-
----
-
-```bash
-python -m scripts.select_data
-```
-
-Executa consultas manuais no banco.
-
----
-
-```bash
-python -m scripts.test_connection
-```
-
-Testa conexão com Oracle.
-
----
-
-# API (FastAPI)
-
-```bash
-uvicorn main:app --reload
-```
-
-Inicia a API localmente.
-
----
+# API
 
 ```text
 http://127.0.0.1:8000
@@ -208,12 +348,12 @@ Retorna status da API.
 GET /builds
 ```
 
-Retorna builds do Oracle.
+Retorna builds armazenadas no Oracle.
 
 Exemplo:
 
 ```text
-/builds?limit=2
+/builds?champion=Ahri
 ```
 
 ---
@@ -227,16 +367,16 @@ Recebe perguntas em linguagem natural.
 Exemplo:
 
 ```text
-/ask?question=qual a build da ahri
+/ask?question=me fala sobre a ahri
 ```
 
 ---
 
-```bash
-Ctrl + C
+```text
+GET /stats
 ```
 
-Para execução da API.
+Retorna estatísticas da aplicação.
 
 ---
 
@@ -270,7 +410,7 @@ Cria commit.
 git push
 ```
 
-Envia alterações para GitHub.
+Envia alterações para o GitHub.
 
 ---
 
@@ -296,7 +436,7 @@ Lista dependências com versões exatas.
 pip freeze > requirements.txt
 ```
 
-Atualiza requirements.txt.
+Atualiza o requirements.txt com as versões atualmente instaladas.
 
 ---
 
@@ -308,18 +448,10 @@ Instala dependências do projeto.
 
 ---
 
-# Variáveis de Ambiente
+# VS Code
 
-```python
-load_dotenv()
+```text
+Ctrl + Shift + V
 ```
 
-Carrega variáveis do arquivo `.env`.
-
----
-
-```python
-os.getenv("VAR")
-```
-
-Obtém valor de variável de ambiente.
+Abre a visualização formatada de arquivos Markdown.
