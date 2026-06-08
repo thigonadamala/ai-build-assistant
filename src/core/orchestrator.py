@@ -137,6 +137,46 @@ def handle_build_intent(
     )
 
 
+def handle_winrate_intent(
+    question: str,
+    filters: dict,
+    champion: str | None,
+    role: str | None,
+    limit: int
+):
+    result = get_builds(
+        champion=champion,
+        role=role,
+        limit=limit
+    )
+
+    data = result["data"]
+
+    if not data:
+        return build_response(
+            question=question,
+            interpreted_filters=filters,
+            applied_filters=result["filters"],
+            total=result["total"],
+            answer="Não encontrei winrate para essa pergunta.",
+            data=[]
+        )
+
+    answer = generate_answer(
+        intent="winrate",
+        data=data[0]
+    )
+
+    return build_response(
+        question=question,
+        interpreted_filters=filters,
+        applied_filters=result["filters"],
+        total=result["total"],
+        answer=answer,
+        data=data
+    )
+
+
 def handle_configured_intent(
     question: str,
     filters: dict,
@@ -264,6 +304,15 @@ def handle_question(question: str):
     try:
         if intent == "build":
             response = handle_build_intent(
+                question=question,
+                filters=filters,
+                champion=champion,
+                role=role,
+                limit=limit
+            )
+
+        elif intent == "winrate":
+            response = handle_winrate_intent(
                 question=question,
                 filters=filters,
                 champion=champion,
