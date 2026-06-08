@@ -1,33 +1,6 @@
 from src.database.db import get_connection
 
 
-def get_available_champions():
-    connection = None
-    cursor = None
-
-    try:
-        connection = get_connection()
-        cursor = connection.cursor()
-
-        # Busca campeões únicos cadastrados no banco
-        cursor.execute("SELECT DISTINCT champion FROM lol_builds")
-
-        rows = cursor.fetchall()
-
-        # Retorna lista simples
-        return [row[0] for row in rows]
-
-    except Exception:
-        return []
-
-    finally:
-        if cursor:
-            cursor.close()
-
-        if connection:
-            connection.close()
-
-
 def get_builds(
     champion: str | None = None,
     role: str | None = None,
