@@ -1,8 +1,4 @@
-import os
-import oracledb
-from dotenv import load_dotenv
-
-load_dotenv()
+from src.database.db import get_connection
 
 
 def insert_counters():
@@ -10,20 +6,13 @@ def insert_counters():
     cursor = None
 
     counters = [
-        ("Ahri", "Zed", "mid", 48.20),
-        ("Ahri", "Fizz", "mid", 47.10),
-        ("Ahri", "Kassadin", "mid", 46.50),
-        ("Yasuo", "Malphite", "mid", 45.80),
-        ("Yasuo", "Renekton", "mid", 46.30),
-        ("Jinx", "Draven", "adc", 47.40),
+        ("Ahri", "Zed", "mid", 48.2),
+        ("Ahri", "Fizz", "mid", 47.1),
+        ("Ahri", "Kassadin", "mid", 46.5)
     ]
 
     try:
-        connection = oracledb.connect(
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASSWORD"),
-            dsn=os.getenv("DB_DSN")
-        )
+        connection = get_connection()
 
         cursor = connection.cursor()
 
@@ -43,6 +32,7 @@ def insert_counters():
         """, counters)
 
         connection.commit()
+
         print("Counters inseridos com sucesso!")
 
     except Exception as e:

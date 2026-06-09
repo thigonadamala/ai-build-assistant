@@ -1,28 +1,20 @@
-import os
-import oracledb
-from dotenv import load_dotenv
-
-load_dotenv()
+from src.database.db import get_connection
 
 
 def insert_runes():
     connection = None
     cursor = None
 
+    runes = [
+        ("Ahri", "mid", "Eletrocutar", "Precisão", 52.3),
+        ("Zed", "mid", "Conquistador", "Dominação", 49.8),
+        ("Jinx", "adc", "Ritmo Fatal", "Precisão", 51.2)
+    ]
+
     try:
-        connection = oracledb.connect(
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASSWORD"),
-            dsn=os.getenv("DB_DSN")
-        )
+        connection = get_connection()
 
         cursor = connection.cursor()
-
-        runes = [
-            ("Ahri", "mid", "Eletrocutar", "Feitiçaria", 52.4),
-            ("Jinx", "adc", "Ritmo Fatal", "Inspiração", 51.8),
-            ("Lee Sin", "jungle", "Conquistador", "Inspiração", 50.9)
-        ]
 
         cursor.executemany("""
             INSERT INTO lol_runes (
@@ -31,7 +23,8 @@ def insert_runes():
                 primary_rune,
                 secondary_rune,
                 winrate
-            ) VALUES (
+            )
+            VALUES (
                 :1,
                 :2,
                 :3,
@@ -41,6 +34,7 @@ def insert_runes():
         """, runes)
 
         connection.commit()
+
         print("Runas inseridas com sucesso!")
 
     except Exception as e:

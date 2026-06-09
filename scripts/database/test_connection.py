@@ -1,24 +1,22 @@
-import os
-import oracledb
-from dotenv import load_dotenv
+from src.database.db import get_connection
 
-load_dotenv()
 
 def test_connection():
+    connection = None
+
     try:
-        connection = oracledb.connect(
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASSWORD"),
-            dsn=os.getenv("DB_DSN")
-        )
+        connection = get_connection()
 
         print("Conexão com Oracle realizada com sucesso!")
-
-        connection.close()
 
     except Exception as e:
         print("Erro ao conectar no Oracle:")
         print(e)
+
+    finally:
+        if connection:
+            connection.close()
+
 
 if __name__ == "__main__":
     test_connection()

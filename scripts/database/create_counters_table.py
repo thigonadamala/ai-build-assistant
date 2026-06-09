@@ -1,19 +1,12 @@
-import os
-import oracledb
-from dotenv import load_dotenv
+from src.database.db import get_connection
 
-load_dotenv()
 
 def create_table():
     connection = None
     cursor = None
 
     try:
-        connection = oracledb.connect(
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASSWORD"),
-            dsn=os.getenv("DB_DSN")
-        )
+        connection = get_connection()
 
         cursor = connection.cursor()
 
@@ -30,6 +23,7 @@ def create_table():
         """)
 
         connection.commit()
+
         print("Tabela lol_counters criada com sucesso!")
 
     except Exception as e:
@@ -42,6 +36,7 @@ def create_table():
 
         if connection:
             connection.close()
+
 
 if __name__ == "__main__":
     create_table()

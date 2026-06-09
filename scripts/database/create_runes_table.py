@@ -1,8 +1,4 @@
-import os
-import oracledb
-from dotenv import load_dotenv
-
-load_dotenv()
+from src.database.db import get_connection
 
 
 def create_runes_table():
@@ -10,11 +6,7 @@ def create_runes_table():
     cursor = None
 
     try:
-        connection = oracledb.connect(
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASSWORD"),
-            dsn=os.getenv("DB_DSN")
-        )
+        connection = get_connection()
 
         cursor = connection.cursor()
 
@@ -32,6 +24,7 @@ def create_runes_table():
         """)
 
         connection.commit()
+
         print("Tabela lol_runes criada com sucesso!")
 
     except Exception as e:
