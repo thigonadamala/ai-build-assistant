@@ -106,7 +106,7 @@ python -m pipelines.run_pipeline
 
 O banco principal é o Oracle Autonomous Database, hospedado na Oracle Cloud.
 
-A conexão utiliza Oracle Wallet e está centralizada em:
+A conexão padrão utiliza TLS/TCPS sem Oracle Wallet e está centralizada em:
 
 ```text
 src/database/db.py
@@ -183,7 +183,7 @@ http://127.0.0.1:8000/docs
 - OpenAI API
 - Oracle Autonomous Database
 - python-oracledb
-- Oracle Wallet
+- TLS/TCPS
 - Docker
 - Docker Compose
 - python-dotenv
@@ -246,13 +246,10 @@ OPENAI_API_KEY=
 
 DB_USER=
 DB_PASSWORD=
-DB_DSN=
-DB_WALLET_PATH=
-DB_WALLET_PASSWORD=
+DB_DSN=(description=(address=(protocol=tcps)(port=1522)(host=HOST_DO_BANCO))(connect_data=(service_name=SERVICE_NAME))(security=(ssl_server_dn_match=yes)))
 ```
 
-O arquivo `.env`, a Oracle Wallet e arquivos `.zip` não devem ser enviados ao
-repositório.
+O arquivo `.env` não deve ser enviado ao repositório.
 
 ### 4. Executar a API
 
@@ -281,12 +278,11 @@ O endpoint `/stats` retorna:
 
 O projeto possui `Dockerfile` e configuração do Docker Compose para a API.
 
-O `docker-compose.yml` ainda referencia o Oracle local e precisa ser adaptado
-antes de ser utilizado com o Oracle Autonomous Database e a Wallet.
+O `docker-compose.yml` carrega as variáveis da `.env`. A conexão com o Oracle
+Autonomous Database usa o DSN TLS/TCPS e não exige volume de Wallet.
 
 ## Próximos Passos
 
-- Adaptar a execução com Docker para o Oracle Autonomous Database
 - Implementar busca semântica com embeddings
 - Adicionar um banco vetorial
 - Expandir a base de campeões e guias

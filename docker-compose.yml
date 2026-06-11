@@ -6,11 +6,3 @@ services:
       - "8000:8000"
     env_file:
       - .env
-    environment:
-      DB_DSN: oracle-free:1521/FREEPDB1
-    networks:
-      - ai-build-network
-
-networks:
-  ai-build-network:
-    external: true

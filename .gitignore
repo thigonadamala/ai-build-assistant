@@ -1,9 +1,13 @@
 venv/
 __pycache__/
 *.pyc
+
 .env
 .env.*
+
 logs/
 
-wallet/
 *.zip
+
+# Contexto pessoal de mentoria (somente local)
+docs/contexto_mentoria_local.md

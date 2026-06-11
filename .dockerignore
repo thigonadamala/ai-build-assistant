@@ -1,6 +1,16 @@
 venv/
 __pycache__/
+*.pyc
+
 .git/
 .gitignore
-*.pyc
+
+.env
+.env.*
+
+*.zip
+
 logs/
+tests/
+docs/
+data/
