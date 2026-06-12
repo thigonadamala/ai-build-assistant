@@ -57,18 +57,6 @@ def get_counters(champion=None, role=None, limit=3):
             "data": counters
         }
 
-    except Exception as e:
-        return {
-            "error": str(e),
-            "total": 0,
-            "filters": {
-                "champion": champion,
-                "role": role,
-                "limit": limit
-            },
-            "data": []
-        }
-
     finally:
         if cursor:
             cursor.close()

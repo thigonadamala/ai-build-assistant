@@ -59,12 +59,6 @@ def get_runes(champion=None, role=None, limit=3):
             "data": runes
         }
 
-    except Exception as e:
-        return {
-            "error": str(e),
-            "data": []
-        }
-
     finally:
         if cursor:
             cursor.close()

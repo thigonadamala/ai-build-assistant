@@ -9,11 +9,19 @@ KNOWLEDGE_ROOT = Path(
 def read_markdown_file(
     file_path: Path
 ):
-    if not file_path.exists():
+    knowledge_root = KNOWLEDGE_ROOT.resolve()
+    resolved_file_path = file_path.resolve()
+
+    if not resolved_file_path.is_relative_to(
+        knowledge_root
+    ):
+        return None
+
+    if not resolved_file_path.is_file():
         return None
 
     try:
-        return file_path.read_text(
+        return resolved_file_path.read_text(
             encoding="utf-8"
         )
 

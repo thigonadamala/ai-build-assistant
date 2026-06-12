@@ -70,9 +70,6 @@ def get_builds(
             "data": result
         }
 
-    except Exception as e:
-        return {"error": str(e)}
-
     finally:
         if cursor:
             cursor.close()

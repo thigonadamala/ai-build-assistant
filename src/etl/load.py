@@ -30,6 +30,7 @@ def load_lol(df):
         # Exibe o erro caso a inserção falhe
         print("\nErro ao inserir dados LoL:")
         print(e)
+        raise
 
     finally:
         # Fecha os recursos mesmo se ocorrer erro
