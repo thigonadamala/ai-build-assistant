@@ -116,8 +116,8 @@ def handle_build_intent(
         return build_response(
             question=question,
             interpreted_filters=filters,
-            applied_filters=None,
-            total=None,
+            applied_filters=result["filters"],
+            total=result["total"],
             answer="Não encontrei builds para essa pergunta.",
             data=[]
         )
@@ -130,8 +130,8 @@ def handle_build_intent(
     return build_response(
         question=question,
         interpreted_filters=filters,
-        applied_filters=None,
-        total=None,
+        applied_filters=result["filters"],
+        total=result["total"],
         answer=answer,
         data=data
     )
