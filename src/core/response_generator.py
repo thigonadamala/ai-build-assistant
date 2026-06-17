@@ -1,5 +1,6 @@
 from src.ai.llm_service import generate_llm_answer
 
+
 def generate_winrate_answer(data):
     return (
         f"O winrate encontrado para "
@@ -64,6 +65,26 @@ def get_section(data, source_name, section_name):
     return sections.get(section_name)
 
 
+def format_relevant_chunks(data):
+    rag_context = data.get("rag_context", {})
+    relevant_chunks = rag_context.get("relevant_chunks", [])
+
+    if not relevant_chunks:
+        return None
+
+    formatted_chunks = []
+
+    for chunk in relevant_chunks:
+        formatted_chunks.append(
+            f"Fonte: {chunk.get('source')} | "
+            f"Tipo: {chunk.get('source_type')} | "
+            f"Seção: {chunk.get('section')} | "
+            f"Conteúdo: {chunk.get('text')}"
+        )
+
+    return "\n".join(formatted_chunks)
+
+
 def has_reliable_overview_context(data):
     build = data.get("build", [])
     runes = data.get("runes", [])
@@ -75,11 +96,16 @@ def has_reliable_overview_context(data):
         section_name="overview"
     )
 
+    relevant_context = format_relevant_chunks(
+        data=data
+    )
+
     return bool(
         build or
         runes or
         counters or
-        champion_overview
+        champion_overview or
+        relevant_context
     )
 
 
@@ -95,6 +121,10 @@ def generate_overview_answer(data):
     build = data["build"][0] if data["build"] else None
     rune = data["runes"][0] if data["runes"] else None
     counters = data["counters"]
+
+    relevant_context = format_relevant_chunks(
+        data=data
+    )
 
     champion_overview = get_section(
         data=data,
@@ -141,6 +171,7 @@ def generate_overview_answer(data):
     - Responda em português.
     - Não invente dados.
     - Use apenas as informações fornecidas.
+    - Priorize o contexto recuperado por relevância.
     - Seja direto.
     - Não use markdown.
     - Não cite JSON.
@@ -159,6 +190,9 @@ def generate_overview_answer(data):
 
     Dados de counters:
     {counters}
+
+    Contexto recuperado por relevância:
+    {relevant_context}
 
     Contexto geral do campeão:
     {champion_overview}

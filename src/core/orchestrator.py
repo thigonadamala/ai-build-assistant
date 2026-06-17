@@ -258,7 +258,8 @@ def handle_overview_intent(
     )
 
     rag_context = get_rag_context(
-        champion=champion
+        champion=champion,
+        question=question
     )
 
     overview_data = {

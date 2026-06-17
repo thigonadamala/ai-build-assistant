@@ -15,9 +15,13 @@ Ahri costuma jogar ao redor de pressão na rota, movimentação pelo mapa e puni
 
 ## Pontos fracos
 
-- Pode sofrer contra campeões com engage forte
-- Depende de acertar habilidades importantes
-- Pode ter dificuldade contra campeões que escalam melhor
+Ahri costuma sofrer contra campeões com engage forte que conseguem iniciar a luta rapidamente e reduzir seu espaço para reposicionamento.
+
+Ela depende bastante de acertar habilidades importantes, principalmente o Charme, para vencer trocas, criar oportunidades de abate e controlar lutas.
+
+Quando fica atrás na partida, pode ter dificuldade para impactar o mapa e eliminar alvos prioritários.
+
+Também pode sofrer contra campeões que escalam melhor para o fim do jogo ou que oferecem maior presença em lutas prolongadas.
 
 ## Dicas gerais
 
