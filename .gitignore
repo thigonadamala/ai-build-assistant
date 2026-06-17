@@ -9,5 +9,4 @@ logs/
 
 *.zip
 
-# Contexto pessoal de mentoria (somente local)
-docs/contexto_mentoria_local.md
+docs/contexto_*.md

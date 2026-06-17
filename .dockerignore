@@ -12,5 +12,5 @@ __pycache__/
 
 logs/
 tests/
-docs/
-data/
+
+docs/contexto_*.md

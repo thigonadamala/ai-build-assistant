@@ -1,8 +1,4 @@
-import os
-import oracledb
-from dotenv import load_dotenv
-
-load_dotenv()
+from src.database.db import get_connection
 
 
 def select_data():
@@ -10,12 +6,7 @@ def select_data():
     cursor = None
 
     try:
-        connection = oracledb.connect(
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASSWORD"),
-            dsn=os.getenv("DB_DSN")
-        )
-
+        connection = get_connection()
         cursor = connection.cursor()
 
         cursor.execute("""

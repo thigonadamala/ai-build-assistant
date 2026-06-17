@@ -27,6 +27,9 @@ def load_lol(df):
         print("\nDados LoL inseridos com sucesso!")
 
     except Exception as e:
+        if connection:
+            connection.rollback()
+
         # Exibe o erro caso a inserção falhe
         print("\nErro ao inserir dados LoL:")
         print(e)
