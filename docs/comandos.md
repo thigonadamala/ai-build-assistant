@@ -381,26 +381,14 @@ fonte de dados
 
 # Testes Python Existentes
 
-Os testes automatizados usam `pytest` e isolam chamadas externas com objetos
-falsos e `monkeypatch`.
+Use este comando como verificacao padrao do projeto:
 
 ```powershell
 python -m pytest
 ```
 
-Executa toda a suite sem chamar OpenAI ou Oracle reais.
-
-```powershell
-python -m pytest tests\test_champions_extract.py
-```
-
-Executa somente os testes do extrator de campeoes.
-
-```powershell
-python -m pytest -q
-```
-
-Executa a suite com saida resumida.
+Ele executa todos os testes da pasta `tests/` com saida resumida, sem chamar
+OpenAI ou Oracle reais.
 
 ---
 
