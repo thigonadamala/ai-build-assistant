@@ -290,19 +290,20 @@ def handle_overview_intent(
 
 
 def handle_question(question: str):
-    filters = ask_llm(question)
-
-    print("FILTROS LLM:")
-    print(filters)
-
-    intent = filters.get("intent", "general")
-    champion = filters.get("champion")
-    role = filters.get("role")
-    limit = resolve_limit(intent, filters)
-
-    filters["limit"] = limit
+    intent = "unknown"
+    champion = None
+    role = None
 
     try:
+        filters = ask_llm(question)
+
+        intent = filters.get("intent", "general")
+        champion = filters.get("champion")
+        role = filters.get("role")
+        limit = resolve_limit(intent, filters)
+
+        filters["limit"] = limit
+
         if intent == "build":
             response = handle_build_intent(
                 question=question,

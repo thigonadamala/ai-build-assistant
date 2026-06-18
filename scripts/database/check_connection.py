@@ -1,7 +1,7 @@
 from src.database.db import get_connection
 
 
-def test_connection():
+def check_connection():
     connection = None
 
     try:
@@ -19,4 +19,4 @@ def test_connection():
 
 
 if __name__ == "__main__":
-    test_connection()
+    check_connection()

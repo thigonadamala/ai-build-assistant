@@ -78,7 +78,8 @@ mas ainda não possuem implementação completa.
 
 ## ETL
 
-O pipeline carrega dados de builds para o banco Oracle:
+O projeto possui dois fluxos de ETL. O pipeline inicial carrega builds a
+partir de CSV:
 
 ```text
 CSV
@@ -102,6 +103,31 @@ Execução:
 python -m pipelines.run_pipeline
 ```
 
+O pipeline de campeões consulta a versão mais recente do Riot Data Dragon,
+transforma o `champion.json` e realiza carga idempotente no Oracle com `MERGE`:
+
+```text
+Data Dragon
+ |
+ v
+Extract
+ |
+ v
+Transform
+ |
+ v
+Load
+ |
+ v
+LOL_CHAMPIONS
+```
+
+Execução:
+
+```bash
+python -m src.etl.champions.pipeline
+```
+
 ## Banco de Dados
 
 O banco principal é o Oracle Autonomous Database, hospedado na Oracle Cloud.
@@ -117,6 +143,7 @@ Tabelas utilizadas:
 - `lol_builds`
 - `lol_counters`
 - `lol_runes`
+- `lol_champions`
 
 ## LLM
 
@@ -142,11 +169,14 @@ Atualmente, o sistema:
 
 - Localiza documentos por nome
 - Separa o conteúdo por seções
-- Recupera informações do campeão e de guias
+- Gera chunks a partir das seções
+- Gera embeddings com a OpenAI API
+- Ordena chunks por similaridade de cosseno
+- Recupera informações do campeão e de guias por relevância
 - Utiliza esse contexto na intenção `overview`
 
-Esta versão ainda não utiliza embeddings, banco vetorial ou busca semântica.
-Esses recursos fazem parte da evolução planejada.
+Os embeddings ainda são calculados em memória durante a requisição. O projeto
+ainda não utiliza banco vetorial nem persistência do índice semântico.
 
 ## API
 
@@ -209,6 +239,7 @@ data_pipeline/
 |   |-- database/
 |   |-- embeddings/
 |   |-- etl/
+|   |   `-- champions/
 |   |-- observability/
 |   |-- rag/
 |   `-- services/
@@ -219,8 +250,9 @@ data_pipeline/
 `-- requirements.txt
 ```
 
-O diretório `src/embeddings/` está reservado para a futura implementação de
-busca semântica.
+O código atual de embeddings está em `src/ai/embedding_service.py`. O
+diretório `src/embeddings/` permanece reservado para uma futura camada de
+indexação ou persistência.
 
 ## Configuração Local
 
@@ -235,6 +267,7 @@ venv\Scripts\activate
 
 ```bash
 pip install -r requirements.txt
+pip install -r requirements-dev.txt
 ```
 
 ### 3. Configurar as variáveis de ambiente
@@ -283,13 +316,13 @@ Autonomous Database usa o DSN TLS/TCPS e não exige volume de Wallet.
 
 ## Próximos Passos
 
-- Implementar busca semântica com embeddings
-- Adicionar um banco vetorial
+- Persistir embeddings ou adicionar um banco vetorial
+- Evitar recalcular embeddings de documentos em cada requisição
 - Expandir a base de campeões e guias
 - Implementar novas intenções
 - Melhorar a validação das respostas do LLM
 - Ampliar a cobertura de testes automatizados
-- Integrar fontes externas de dados
+- Expandir o ETL para itens, runas e outras fontes oficiais
 
 ## Status
 

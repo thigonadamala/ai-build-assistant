@@ -1,5 +1,6 @@
 import json
 import os
+from functools import lru_cache
 
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -7,15 +8,22 @@ from openai import OpenAI
 
 load_dotenv()
 
-api_key = os.getenv("OPENAI_API_KEY")
 
-client = OpenAI(
-    api_key=api_key
-)
+@lru_cache
+def get_openai_client():
+    api_key = os.getenv("OPENAI_API_KEY")
+
+    if not api_key:
+        raise RuntimeError(
+            "Variavel de ambiente obrigatoria nao configurada: "
+            "OPENAI_API_KEY"
+        )
+
+    return OpenAI(api_key=api_key)
 
 
 def ask_llm(question: str):
-    response = client.responses.create(
+    response = get_openai_client().responses.create(
         model="gpt-4.1-mini",
         input=f"""
         Você é um assistente de League of Legends.
@@ -77,7 +85,7 @@ def ask_llm(question: str):
 
 
 def generate_llm_answer(prompt: str):
-    response = client.responses.create(
+    response = get_openai_client().responses.create(
         model="gpt-4.1-mini",
         input=prompt
     )

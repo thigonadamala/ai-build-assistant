@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from src.services.build_service import get_builds
 from src.observability.stats_service import get_stats
 from src.core.orchestrator import handle_question
@@ -15,7 +15,11 @@ def home():
 def builds(
     champion: str | None = None,
     role: str | None = None,
-    limit: int | None = None
+    limit: int | None = Query(
+        default=None,
+        ge=1,
+        le=100
+    )
 ):
     return get_builds(
         champion=champion,

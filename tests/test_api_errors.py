@@ -22,3 +22,19 @@ def test_builds_returns_500_when_database_fails(monkeypatch):
     response = client.get("/builds")
 
     assert response.status_code == 500
+
+
+def test_builds_rejects_limit_below_one():
+    client = TestClient(main.app)
+
+    response = client.get("/builds?limit=0")
+
+    assert response.status_code == 422
+
+
+def test_builds_rejects_limit_above_one_hundred():
+    client = TestClient(main.app)
+
+    response = client.get("/builds?limit=101")
+
+    assert response.status_code == 422

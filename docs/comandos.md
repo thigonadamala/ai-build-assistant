@@ -381,23 +381,26 @@ fonte de dados
 
 # Testes Python Existentes
 
-Os arquivos atuais sao scripts de teste e ainda devem ser revisados antes de
-serem tratados como uma suite automatizada completa.
+Os testes automatizados usam `pytest` e isolam chamadas externas com objetos
+falsos e `monkeypatch`.
 
 ```powershell
-python -m tests.test_llm
+python -m pytest
 ```
+
+Executa toda a suite sem chamar OpenAI ou Oracle reais.
 
 ```powershell
-python -m tests.test_rag_service
+python -m pytest tests\test_champions_extract.py
 ```
+
+Executa somente os testes do extrator de campeoes.
 
 ```powershell
-python -m tests.test_rune_service
+python -m pytest -q
 ```
 
-Execute cada teste separadamente e confira o corpo da saida, nao apenas o
-codigo de encerramento.
+Executa a suite com saida resumida.
 
 ---
 
