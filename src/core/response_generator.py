@@ -57,6 +57,43 @@ def generate_runes_answer(data):
     )
 
 
+def generate_champion_info_answer(data):
+    name = data["name"]
+    title = data.get("title")
+    primary_tag = data.get("primary_tag")
+    secondary_tag = data.get("secondary_tag")
+    partype = data.get("partype")
+
+    description_parts = []
+
+    if title:
+        description_parts.append(title)
+
+    if primary_tag and secondary_tag:
+        description_parts.append(
+            f"é da classe {primary_tag}, "
+            f"com classe secundária {secondary_tag}"
+        )
+
+    elif primary_tag:
+        description_parts.append(
+            f"é da classe {primary_tag}"
+        )
+
+    if partype:
+        description_parts.append(
+            f"usa {partype} como recurso"
+        )
+
+    if not description_parts:
+        return (
+            f"Encontrei {name}, mas não há informações "
+            f"básicas adicionais disponíveis."
+        )
+
+    return f"{name} {', '.join(description_parts)}."
+
+
 def get_section(data, source_name, section_name):
     rag_context = data.get("rag_context", {})
     source = rag_context.get(source_name, {})
@@ -223,6 +260,7 @@ ANSWER_GENERATORS = {
     "build": generate_build_answer,
     "counters": generate_counters_answer,
     "runes": generate_runes_answer,
+    "champion_info": generate_champion_info_answer,
     "overview": generate_overview_answer
 }
 

@@ -3,6 +3,7 @@ from src.observability.logger import write_log
 from src.rag.rag_service import get_rag_context
 from src.core.response_generator import generate_answer
 from src.services.build_service import get_builds
+from src.services.champion_service import get_champions
 from src.services.counter_service import get_counters
 from src.services.rune_service import get_runes
 
@@ -17,6 +18,7 @@ DEFAULT_LIMITS = {
     "synergies": 3,
     "power_spike": 1,
     "overview": 1,
+    "champion_info": 1,
     "general": 1
 }
 
@@ -31,6 +33,7 @@ MAX_LIMITS = {
     "synergies": 10,
     "power_spike": 5,
     "overview": 1,
+    "champion_info": 1,
     "general": 10
 }
 
@@ -223,6 +226,54 @@ def handle_configured_intent(
     )
 
 
+def handle_champion_info_intent(
+    question: str,
+    filters: dict,
+    champion: str | None,
+    limit: int
+):
+    if not champion:
+        return build_response(
+            question=question,
+            interpreted_filters=filters,
+            applied_filters=None,
+            total=None,
+            answer="Informe um campeão para consultar suas informações.",
+            data=[]
+        )
+
+    result = get_champions(
+        champion=champion,
+        limit=limit
+    )
+
+    data = result["data"]
+
+    if not data:
+        return build_response(
+            question=question,
+            interpreted_filters=filters,
+            applied_filters=result["filters"],
+            total=result["total"],
+            answer="Não encontrei informações para esse campeão.",
+            data=[]
+        )
+
+    answer = generate_answer(
+        intent="champion_info",
+        data=data[0]
+    )
+
+    return build_response(
+        question=question,
+        interpreted_filters=filters,
+        applied_filters=result["filters"],
+        total=result["total"],
+        answer=answer,
+        data=data
+    )
+
+
 def handle_overview_intent(
     question: str,
     filters: dict,
@@ -329,6 +380,14 @@ def handle_question(question: str):
                 intent=intent,
                 champion=champion,
                 role=role,
+                limit=limit
+            )
+
+        elif intent == "champion_info":
+            response = handle_champion_info_intent(
+                question=question,
+                filters=filters,
+                champion=champion,
                 limit=limit
             )
 

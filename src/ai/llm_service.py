@@ -45,6 +45,7 @@ def ask_llm(question: str):
         - matchup
         - power_spike
         - overview
+        - champion_info
         - general
 
         Regras:
@@ -53,7 +54,8 @@ def ask_llm(question: str):
         - role deve ser mid, adc, support, top, jungle ou null
         - limit deve ser null quando o usuário não pedir quantidade
         - limit deve ser um número somente quando o usuário pedir uma quantidade explicitamente
-        - use overview quando o usuário fizer uma pergunta geral sobre um campeão
+        - use champion_info quando o usuário perguntar quem é um campeão, qual sua classe, função, recurso, tipo, categoria ou informações básicas do campeão
+        - use overview quando o usuário fizer uma pergunta estratégica geral sobre um campeão
         - use overview quando o usuário escrever apenas o nome de um campeão
         - use build quando o usuário pedir build, item ou itens
         - use counters quando o usuário perguntar counters, quem countera ou matchups difíceis
@@ -62,6 +64,19 @@ def ask_llm(question: str):
         - não use markdown
         - não use bloco de código
         - não explique nada fora do JSON
+
+        Exemplos:
+        Pergunta: Quem é Ahri?
+        Resposta: {{"intent": "champion_info", "champion": "Ahri", "role": null, "limit": null}}
+
+        Pergunta: Qual a classe da Ahri?
+        Resposta: {{"intent": "champion_info", "champion": "Ahri", "role": null, "limit": null}}
+
+        Pergunta: Que recurso o Yasuo usa?
+        Resposta: {{"intent": "champion_info", "champion": "Yasuo", "role": null, "limit": null}}
+
+        Pergunta: Me dá uma visão geral da Ahri
+        Resposta: {{"intent": "overview", "champion": "Ahri", "role": null, "limit": null}}
 
         Pergunta do usuário:
         {question}
